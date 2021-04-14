@@ -3,15 +3,18 @@ const connection = require('../../config/mysql')
 module.exports = {
   getDataAll: () => {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT * FROM booking', (error, result) => {
-        !error ? resolve(result) : reject(new Error(error))
-      })
+      connection.query(
+        'SELECT booking.booking_id, premiere.premiere_name, premiere.premiere_price, booking.booking_ticket, booking.booking_total_price, booking.booking_payment_method, booking.booking_status, booking.booking_created_at, booking.booking_updated_at FROM booking booking LEFT JOIN premiere premiere on booking.premiere_id = premiere.premiere_id',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
     })
   },
   getDataById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM booking WHERE booking_id = ?',
+        'SELECT booking.booking_id, premiere.premiere_name, premiere.premiere_price, booking.booking_ticket, booking.booking_total_price, booking.booking_payment_method, booking.booking_status, booking.booking_created_at, booking.booking_updated_at FROM booking booking LEFT JOIN premiere premiere on booking.premiere_id = premiere.premiere_id WHERE booking.booking_id = ?',
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))

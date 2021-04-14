@@ -27,7 +27,13 @@ module.exports = {
   },
   postBooking: async (req, res) => {
     try {
-      const { premiereId, bookingTicket, bookingSeat } = req.body
+      const {
+        premiereId,
+        bookingTicket,
+        bookingSeat,
+        bookingPaymentMethod,
+        bookingStatus
+      } = req.body
       const resultPremiere = await premiereModel.getDataById(premiereId)
       resultPremiere.forEach(async function (item) {
         try {
@@ -35,7 +41,9 @@ module.exports = {
           const data = {
             premiere_id: premiereId,
             booking_ticket: bookingTicket,
-            booking_total_price: totalPrice
+            booking_total_price: totalPrice,
+            booking_payment_method: bookingPaymentMethod,
+            booking_status: bookingStatus
           }
           const result2 = await bookingModel.createDataBooking(data)
           bookingSeat.forEach(function (item) {
