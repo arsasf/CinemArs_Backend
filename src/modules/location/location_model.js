@@ -1,22 +1,22 @@
 const connection = require('../../config/mysql')
 
 module.exports = {
-  getDataCount: (searchByName, { sort }) => {
+  getDataCount: (searchByCity, { sort }) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT COUNT(*) AS total FROM movie WHERE movie_name LIKE "%"?"%" ORDER BY ${sort}`,
-        searchByName,
+        `SELECT COUNT(*) AS total FROM location WHERE location_city LIKE "%"?"%" ORDER BY ${sort}`,
+        searchByCity,
         (error, result) => {
           !error ? resolve(result[0].total) : reject(new Error(error))
         }
       )
     })
   },
-  getDataAll: (searchByName, { sort }, limit, offset) => {
+  getDataAll: (searchByCity, { sort }, limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM movie WHERE movie_name LIKE "%"?"%" ORDER BY ${sort} LIMIT ? OFFSET ?`,
-        [searchByName, limit, offset],
+        `SELECT * FROM location WHERE location_city LIKE "%"?"%" ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        [searchByCity, limit, offset],
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
@@ -26,7 +26,7 @@ module.exports = {
   getDataById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM movie WHERE movie_id = ?',
+        'SELECT * FROM location WHERE location_id = ?',
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
@@ -36,24 +36,28 @@ module.exports = {
   },
   createData: (setData) => {
     return new Promise((resolve, reject) => {
-      connection.query('INSERT INTO movie SET ?', setData, (error, result) => {
-        // !error ? resolve({id: result.inserId, ...setData}) : reject(new Error(error))
-        if (!error) {
-          const newResult = {
-            id: result.insertId,
-            ...setData
+      connection.query(
+        'INSERT INTO location SET ?',
+        setData,
+        (error, result) => {
+          // !error ? resolve({id: result.inserId, ...setData}) : reject(new Error(error))
+          if (!error) {
+            const newResult = {
+              id: result.insertId,
+              ...setData
+            }
+            resolve(newResult)
+          } else {
+            reject(new Error(error))
           }
-          resolve(newResult)
-        } else {
-          reject(new Error(error))
         }
-      })
+      )
     })
   },
   updateData: (setData, id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'UPDATE movie SET ? WHERE movie_id = ?',
+        'UPDATE location SET ? WHERE location_id = ?',
         [setData, id],
         (error, result) => {
           if (!error) {
@@ -72,7 +76,7 @@ module.exports = {
   deleteData: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'DELETE FROM movie WHERE movie_id = ?',
+        'DELETE FROM location WHERE location_id = ?',
         id,
         (error, result) => {
           if (!error) {
