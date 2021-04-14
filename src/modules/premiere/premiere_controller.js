@@ -59,7 +59,7 @@ module.exports = {
       )
       console.log(result)
       if (result.length > 0) {
-        return helper.response(res, 200, 'Success Get Data', pageInfo, result)
+        return helper.response(res, 200, 'Success Get Data', result, pageInfo)
       } else {
         return helper.response(
           res,
