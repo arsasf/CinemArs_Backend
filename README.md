@@ -1,15 +1,17 @@
 <h1 align="center">ExpressJS - CinemArs Ticket Booking RESTfull API</h1>
 
-# Project ini melengkapi feature Backend dari website CinemArs Ticket Booking
+# About Project
 
-Adapun feature yang dimaksud yaitu :
+This project to completed feature Backend from website CinemArs Ticket Booking
+About feature etc :
 
 1. CRUD MOVIE
 2. CRUD PREMIERE
 3. CRUD LOCATION
 4. CRUD SHOW_TIME
 5. BOOKING & SEAT BOOKING
-   [More about Express](https://en.wikipedia.org/wiki/Express.js)
+
+[More about Express](https://en.wikipedia.org/wiki/Express.js)
 
 ## Built With
 
