@@ -8,7 +8,7 @@ module.exports = {
       if (!page && !limit && !sort && !searchByName) {
         page = 1
         limit = 11
-        sort = 'premiere_id ASC'
+        sort = 'premiere.premiere_id ASC'
         searchByName = ''
       } else if (!page && limit && sort && searchByName) {
         page = 1
@@ -18,7 +18,7 @@ module.exports = {
       } else if (!page && !limit && !sort && searchByName) {
         page = 1
         limit = 11
-        sort = 'premiere_id ASC'
+        sort = 'premiere.premiere_id ASC'
       } else if (!page && !limit && sort && !searchByName) {
         page = 1
         limit = 11
@@ -27,15 +27,15 @@ module.exports = {
         limit = 11
       } else if (page && !limit && !sort && searchByName) {
         limit = 11
-        sort = 'premiere_id ASC'
+        sort = 'premiere.premiere_id ASC'
       } else if (page && !limit && !sort && !searchByName) {
         limit = 11
-        sort = 'premiere_id ASC'
+        sort = 'premiere.premiere_id ASC'
         searchByName = ''
       } else if (page && limit && !sort && searchByName) {
-        sort = 'premiere_id ASC'
+        sort = 'premiere.premiere_id ASC'
       } else if (page && limit && !sort && !searchByName) {
-        sort = 'premiere_id ASC'
+        sort = 'premiere.premiere_id ASC'
         searchByName = ''
       } else if (page && limit && sort && !searchByName) {
         searchByName = ''
@@ -75,9 +75,164 @@ module.exports = {
   getPremiereById: async (req, res) => {
     try {
       const { id } = req.params
-      const result = await premiereModel.getDataById(id)
+      console.log(req.params)
+      let { page, limit, searchByName, sort, searchBydate } = req.query
+      console.log(req.query)
+      if (!page && !limit && !sort && !searchByName && !searchBydate) {
+        page = 1
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (
+        !page &&
+        !limit &&
+        !sort &&
+        !searchByName &&
+        searchBydate === ' 1'
+      ) {
+        page = 1
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        searchBydate = '+1'
+        console.log(req.query)
+      } else if (page && !limit && !sort && !searchByName && !searchBydate) {
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && limit && !sort && !searchByName && !searchBydate) {
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && limit && sort && !searchByName && !searchBydate) {
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && limit && sort && searchByName && !searchBydate) {
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && limit && sort && searchByName && searchBydate) {
+        console.log(req.query)
+      } else if (!page && limit && sort && searchByName && searchBydate) {
+        page = 1
+        console.log(req.query)
+      } else if (!page && limit && !sort && searchByName && searchBydate) {
+        page = 1
+        sort = 'premiere.premiere_id ASC'
+        console.log(req.query)
+      } else if (!page && limit && !sort && !searchByName && searchBydate) {
+        page = 1
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      } else if (!page && limit && !sort && !searchByName && !searchBydate) {
+        page = 1
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (!page && limit && sort && !searchByName && !searchBydate) {
+        page = 1
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (!page && limit && !sort && searchByName && !searchBydate) {
+        page = 1
+        sort = 'premiere.premiere_id ASC'
+        searchBydate = ''
+        console.log(req.query)
+      } else if (!page && !limit && sort && !searchByName && !searchBydate) {
+        page = 1
+        limit = 11
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && !limit && sort && !searchByName && !searchBydate) {
+        limit = 11
+        searchByName = ''
+        searchBydate = ''
+        console.log(req.query)
+      } else if (!page && !limit && sort && searchByName && !searchBydate) {
+        page = 1
+        limit = 11
+        searchBydate = ''
+        console.log(req.query)
+      } else if (!page && !limit && sort && !searchByName && searchBydate) {
+        page = 1
+        limit = 11
+        searchByName = ''
+        console.log(req.query)
+      } else if (!page && !limit && !sort && searchByName && !searchBydate) {
+        page = 1
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && !limit && !sort && searchByName && !searchBydate) {
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchBydate = ''
+        console.log(req.query)
+      } else if (page && limit && !sort && searchByName && !searchBydate) {
+        sort = 'premiere.premiere_id ASC'
+        searchBydate = ''
+        console.log(req.query)
+      } else if (!page && !limit && !sort && searchByName && searchBydate) {
+        page = 1
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        console.log(req.query)
+      } else if (!page && !limit && !sort && !searchByName && searchBydate) {
+        page = 1
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      } else if (page && !limit && !sort && !searchByName && searchBydate) {
+        limit = 11
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      } else if (page && limit && !sort && !searchByName && searchBydate) {
+        sort = 'premiere.premiere_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      }
+      console.log(req.query)
+      page = parseInt(page)
+      limit = parseInt(limit)
+      const totalData = await premiereModel.getDataCount(
+        id,
+        searchByName,
+        {
+          sort
+        },
+        searchBydate
+      )
+      console.log(totalData)
+      const totalpage = Math.ceil(totalData / limit)
+      const offset = page * limit - limit
+      const pageInfo = {
+        page,
+        totalpage,
+        limit,
+        totalData
+      }
+      const result = await premiereModel.getDataById(
+        id,
+        searchByName,
+        { sort },
+        searchBydate,
+        limit,
+        offset
+      )
       if (result.length > 0) {
-        return helper.response(res, 200, 'Success Get Data', result)
+        return helper.response(res, 200, 'Success Get Data', result, pageInfo)
       } else {
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
       }

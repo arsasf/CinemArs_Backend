@@ -87,10 +87,11 @@ module.exports = {
   postLocation: async (req, res) => {
     try {
       console.log(req.body)
-      const { locationCity, locationAddress } = req.body
+      const { premiereId, locationCity, locationAddress } = req.body
       const setData = {
         location_city: locationCity,
-        location_address: locationAddress
+        location_address: locationAddress,
+        premiere_id: premiereId
       }
       const result = await locationModel.createData(setData)
       return helper.response(res, 200, 'Success Create Location!', result)

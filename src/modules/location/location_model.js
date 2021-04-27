@@ -47,8 +47,10 @@ module.exports = {
               ...setData
             }
             resolve(newResult)
+            console.log(newResult)
           } else {
             reject(new Error(error))
+            console.log(error)
           }
         }
       )

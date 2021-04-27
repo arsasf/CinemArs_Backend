@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const routerNavigation = require('./routes')
 
 const app = express()
-const port = 3000
+const port = 3001
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 app.use('/api/v1', routerNavigation)
+app.use('/api', express.static('src/uploads'))
 
 // app.post('/movie', (req, res) => {
 //   console.log('Post Movie Works !')

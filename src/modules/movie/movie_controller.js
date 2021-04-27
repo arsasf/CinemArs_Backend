@@ -7,45 +7,138 @@ module.exports = {
   // },
   getAllMovies: async (req, res) => {
     try {
-      let { page, limit, searchByName, sort } = req.query
-      if (!page && !limit && !sort && !searchByName) {
+      let { page, limit, searchByName, sort, month } = req.query
+      if (!page && !limit && !sort && !searchByName && !month) {
         page = 1
         limit = 11
         sort = 'movie_id ASC'
         searchByName = ''
-      } else if (!page && limit && sort && searchByName) {
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (
+        !page &&
+        !limit &&
+        !sort &&
+        !searchByName &&
+        month === 'month(now()) 1'
+      ) {
         page = 1
-      } else if (!page && !limit && sort && searchByName) {
-        page = 1
-        limit = 11
-      } else if (!page && !limit && !sort && searchByName) {
-        page = 1
-        limit = 11
-        sort = 'movie_id ASC'
-      } else if (!page && !limit && sort && !searchByName) {
-        page = 1
-        limit = 11
-        searchByName = ''
-      } else if (page && !limit && sort && searchByName) {
-        limit = 11
-      } else if (page && !limit && !sort && searchByName) {
-        limit = 11
-        sort = 'movie_id ASC'
-      } else if (page && !limit && !sort && !searchByName) {
         limit = 11
         sort = 'movie_id ASC'
         searchByName = ''
-      } else if (page && limit && !sort && searchByName) {
-        sort = 'movie_id ASC'
-      } else if (page && limit && !sort && !searchByName) {
+        month = 'MONTH(now())+1'
+        console.log(req.query)
+      } else if (page && !limit && !sort && !searchByName && !month) {
+        limit = 11
         sort = 'movie_id ASC'
         searchByName = ''
-      } else if (page && limit && sort && !searchByName) {
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && limit && !sort && !searchByName && !month) {
+        sort = 'movie_id ASC'
         searchByName = ''
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && limit && sort && !searchByName && !month) {
+        searchByName = ''
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && limit && sort && searchByName && !month) {
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && limit && sort && searchByName && month) {
+        console.log(req.query)
+      } else if (!page && limit && sort && searchByName && month) {
+        page = 1
+        console.log(req.query)
+      } else if (!page && limit && !sort && searchByName && month) {
+        page = 1
+        sort = 'movie_id ASC'
+        console.log(req.query)
+      } else if (!page && limit && !sort && !searchByName && month) {
+        page = 1
+        sort = 'movie_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      } else if (!page && limit && !sort && !searchByName && !month) {
+        page = 1
+        sort = 'movie_id ASC'
+        searchByName = ''
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (!page && limit && sort && !searchByName && !month) {
+        page = 1
+        searchByName = ''
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (!page && limit && !sort && searchByName && !month) {
+        page = 1
+        sort = 'movie_id ASC'
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (!page && !limit && sort && !searchByName && !month) {
+        page = 1
+        limit = 11
+        searchByName = ''
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && !limit && sort && !searchByName && !month) {
+        limit = 11
+        searchByName = ''
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (!page && !limit && sort && searchByName && !month) {
+        page = 1
+        limit = 11
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (!page && !limit && sort && !searchByName && month) {
+        page = 1
+        limit = 11
+        searchByName = ''
+        console.log(req.query)
+      } else if (!page && !limit && !sort && searchByName && !month) {
+        page = 1
+        limit = 11
+        sort = 'movie_id ASC'
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && !limit && !sort && searchByName && !month) {
+        limit = 11
+        sort = 'movie_id ASC'
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (page && limit && !sort && searchByName && !month) {
+        sort = 'movie_id ASC'
+        month = 'MONTH(now())'
+        console.log(req.query)
+      } else if (!page && !limit && !sort && searchByName && month) {
+        page = 1
+        limit = 11
+        sort = 'movie_id ASC'
+        console.log(req.query)
+      } else if (!page && !limit && !sort && !searchByName && month) {
+        page = 1
+        limit = 11
+        sort = 'movie_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      } else if (page && !limit && !sort && !searchByName && month) {
+        limit = 11
+        sort = 'movie_id ASC'
+        searchByName = ''
+        console.log(req.query)
+      } else if (page && limit && !sort && !searchByName && month) {
+        sort = 'movie_id ASC'
+        searchByName = ''
+        console.log(req.query)
       }
       page = parseInt(page)
       limit = parseInt(limit)
-      const totalData = await movieModel.getDataCount(searchByName, { sort })
+      const totalData = await movieModel.getDataCount({ month }, searchByName, {
+        sort
+      })
+      console.log(totalData)
       const totalpage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const pageInfo = {
@@ -55,21 +148,13 @@ module.exports = {
         totalData
       }
       const result = await movieModel.getDataAll(
+        { month },
         searchByName,
         { sort },
         limit,
         offset
       )
-      if (result.length > 0) {
-        return helper.response(res, 200, 'Success Get Data', result, pageInfo)
-      } else {
-        return helper.response(
-          res,
-          404,
-          `Data ${searchByName} Not Found !`,
-          null
-        )
-      }
+      return helper.response(res, 200, 'Success Get Data', result, pageInfo)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
@@ -106,14 +191,17 @@ module.exports = {
         movie_duration: movieDuration,
         movie_directed_by: movieDirectedBy,
         movie_casts: movieCasts,
-        movie_synopsis: movieSynopsis
+        movie_synopsis: movieSynopsis,
+        movie_image: req.file ? req.file.filename : ''
       }
+      console.log(setData)
       const result = await movieModel.createData(setData)
       return helper.response(res, 200, 'Success Create Movie', result)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
+
   updateMovie: async (req, res) => {
     try {
       const { id } = req.params
@@ -150,6 +238,8 @@ module.exports = {
   },
   deleteMovie: async (req, res) => {
     try {
+      // buat request di post
+      // set up controller
       const { id } = req.params
       const resultId = await movieModel.getDataById(id)
       if (resultId.length > 0) {

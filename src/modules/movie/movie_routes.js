@@ -4,15 +4,24 @@ const Route = express.Router()
 // const { sayHello } = require('./movie_controller')
 // cara pemanggilan 2
 const movieController = require('./movie_controller')
+const authMiddleware = require('../../middleware/auth')
+const uploadFile = require('../../middleware/uploads')
 
 // route cara pemanggilan 1
 // Route.get('/hello', sayHello)
 // route cara pemanggilan 2
 // Route.get('/hello', movieController.sayHello)
 
-Route.get('/', movieController.getAllMovies)
+Route.get('/', authMiddleware.authentication, movieController.getAllMovies)
 Route.get('/:id', movieController.getMovieById)
-Route.post('/:id', movieController.postMovie)
+Route.post(
+  '/:id',
+  authMiddleware.authentication,
+  authMiddleware.isAdmin,
+  uploadFile,
+  movieController.postMovie
+)
 Route.patch('/:id', movieController.updateMovie)
 Route.delete('/:id', movieController.deleteMovie)
+
 module.exports = Route

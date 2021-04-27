@@ -6,6 +6,7 @@ const locationRouter = require('../modules/location/location_routes')
 const showTimeRouter = require('../modules/show_time/show_time_routes')
 const bookingRouter = require('../modules/booking/booking_routes')
 const bookingSeatRouter = require('../modules/booking_seat/booking_seat_routes')
+const authRouter = require('../modules/auth/auth_routes')
 
 // [1]
 // Route.get('/hello', (req, res) => {
@@ -19,5 +20,6 @@ Route.use('/location', locationRouter)
 Route.use('/showtime', showTimeRouter)
 Route.use('/booking', bookingRouter)
 Route.use('/bookingseat', bookingSeatRouter)
+Route.use('/auth', authRouter)
 
 module.exports = Route
