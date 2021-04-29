@@ -34,7 +34,7 @@ module.exports = {
         user_email: userEmail
       })
       // console.log('checkEmailUser')
-
+      // [1] proses pengecekan apakah email ada di database atau tidak?
       if (checkEmailUser.length > 0) {
         // console.log(checkEmailUser)
         const checkPassword = bcrypt.compareSync(
@@ -42,7 +42,7 @@ module.exports = {
           checkEmailUser[0].user_password
         )
         console.log(checkPassword)
-        //
+        // [2] proses pengecekan apakah password yang dimasukan sesuai atau tidak
         if (checkPassword) {
           const payload = checkEmailUser[0]
           delete payload.user_password
@@ -51,9 +51,9 @@ module.exports = {
           })
           console.log(token)
           const result = { ...payload, token }
-          return helper.response(res, 200, 'Success login', result)
+          return helper.response(res, 200, 'Success login !', result)
         } else {
-          return helper.response(res, 400, 'Wrong Password')
+          return helper.response(res, 400, 'Wrong Password !')
         }
       } else {
         return helper.response(res, 404, 'Email/ Account Not registered')

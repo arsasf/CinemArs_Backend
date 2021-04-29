@@ -1,5 +1,8 @@
+const redis = require('redis')
+const client = redis.createClient()
 const helper = require('../../helpers/wrapper')
 const movieModel = require('./movie_model')
+const fs = require('fs')
 
 module.exports = {
   // sayHello: (req, res) => {
@@ -154,6 +157,11 @@ module.exports = {
         limit,
         offset
       )
+      client.setex(
+        `getmovie:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
+      )
       return helper.response(res, 200, 'Success Get Data', result, pageInfo)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
@@ -164,6 +172,7 @@ module.exports = {
       const { id } = req.params
       const result = await movieModel.getDataById(id)
       if (result.length > 0) {
+        client.set(`getmovie:${id}`, JSON.stringify(result))
         return helper.response(res, 200, 'Success Get Data', result)
       } else {
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
@@ -207,6 +216,17 @@ module.exports = {
       const { id } = req.params
       const resultId = await movieModel.getDataById(id)
       if (resultId.length > 0) {
+        resultId.forEach((item) => {
+          console.log(item.movie_image)
+          if (fs.existsSync('src/uploads/' + item.movie_image)) {
+            // Do something
+            fs.unlink('src/uploads/' + item.movie_image, function (err) {
+              if (err) throw err
+              // if no error, file has been deleted successfully
+              console.log('File deleted!')
+            })
+          }
+        })
         const {
           movieName,
           movieCategory,
@@ -218,6 +238,7 @@ module.exports = {
         } = req.body
         const setData = {
           movie_name: movieName,
+          movie_image: req.file ? req.file.filename : '',
           movie_category: movieCategory,
           movie_release_date: movieReleaseDate,
           movie_duration: movieDuration,
@@ -227,7 +248,6 @@ module.exports = {
           movie_updated_at: new Date(Date.now())
         }
         const result = await movieModel.updateData(setData, id)
-        console.log(result, setData, id)
         return helper.response(res, 200, 'Success update Movie', result)
       } else {
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
@@ -236,13 +256,24 @@ module.exports = {
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
+
   deleteMovie: async (req, res) => {
     try {
-      // buat request di post
-      // set up controller
       const { id } = req.params
       const resultId = await movieModel.getDataById(id)
+      console.log(resultId[0].movie_image)
       if (resultId.length > 0) {
+        // resultId.forEach((item) => {
+        // console.log(item.movie_image)
+        if (fs.existsSync('src/uploads/' + resultId[0].movie_name)) {
+          // Do something
+          fs.unlink('src/uploads/' + resultId[0].movie_image, function (err) {
+            if (err) throw err
+            // if no error, file has been deleted successfully
+            console.log('true')
+          })
+        }
+        // })
         const result = await movieModel.deleteData(id)
         return helper.response(res, 200, 'Success Delete Movie', result)
       } else {

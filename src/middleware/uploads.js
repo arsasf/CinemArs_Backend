@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, cb) => {
-  const listExt = ['.jpg', '.png']
+  const listExt = ['.jpg', '.png', 'jpeg']
   const ext = path.extname(file.originalname).toLowerCase()
   if (listExt.includes(ext)) {
     cb(null, true)
@@ -22,7 +22,7 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-// tambahkan limit
+// tambahkan limit condition
 const upload = multer({ storage, fileFilter }).single('movieImage')
 
 const uploadFilter = (req, res, next) => {

@@ -11,11 +11,12 @@ module.exports = {
       // proses validasi token
       jwt.verify(token, 'RAHASIA', (error, result) => {
         if (
-          (error && error.name === 'JsonWebToken') ||
+          (error && error.name === 'JsonWebTokenError') ||
           (error && error.name === 'TokenExpiredError')
         ) {
           return helper.response(res, 403, error.message)
         } else {
+          // console.log(result) //berisi data sebelum di enkripsi
           req.decodeToken = result
           next()
         }
@@ -27,11 +28,11 @@ module.exports = {
   isAdmin: (req, res, next) => {
     console.log('middleware running ')
     console.log(req.decodeToken)
-    // check kondisi apakah user admin atau bukan
-    // if (conditionCheckUser) {
+    // check kondisi apakah user admin atau bukan ?
+    // if (conditioncheckuserrole apakah admin ?) { // req.decodeToken.user_role === ?
     //   next()
-    // }else{
-
+    // } else {
+    //   mengembalikan respone bahwa endpoin ini tidak bisa diakses selain admin
     // }
     next()
   }

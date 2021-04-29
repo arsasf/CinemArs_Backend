@@ -2,5 +2,7 @@ module.exports = {
   semi: false,
   singleQuote: true,
   trailingComma: 'none',
-  camelCase: 'off'
+  camelCase: 'off',
+  properties: 'never',
+  ignoreDestructuring: true
 }

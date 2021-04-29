@@ -6,22 +6,46 @@ const Route = express.Router()
 const movieController = require('./movie_controller')
 const authMiddleware = require('../../middleware/auth')
 const uploadFile = require('../../middleware/uploads')
-
+const redisMiddleware = require('../../middleware/redis')
+const { isAdmin } = require('../../middleware/auth')
 // route cara pemanggilan 1
 // Route.get('/hello', sayHello)
 // route cara pemanggilan 2
 // Route.get('/hello', movieController.sayHello)
 
-Route.get('/', authMiddleware.authentication, movieController.getAllMovies)
-Route.get('/:id', movieController.getMovieById)
+Route.get(
+  '/',
+  authMiddleware.authentication,
+  redisMiddleware.getMovieRedis,
+  movieController.getAllMovies
+)
+Route.get(
+  '/:id',
+  redisMiddleware.getMovieByIdRedis,
+  movieController.getMovieById
+)
 Route.post(
   '/:id',
   authMiddleware.authentication,
   authMiddleware.isAdmin,
   uploadFile,
+  redisMiddleware.cleardataMovieRedis,
   movieController.postMovie
 )
-Route.patch('/:id', movieController.updateMovie)
-Route.delete('/:id', movieController.deleteMovie)
+Route.patch(
+  '/:id',
+  authMiddleware.authentication,
+  authMiddleware.isAdmin,
+  uploadFile,
+  redisMiddleware.cleardataMovieRedis,
+  movieController.updateMovie
+)
+Route.delete(
+  '/:id',
+  authMiddleware.authentication,
+  isAdmin,
+  redisMiddleware.cleardataMovieRedis,
+  movieController.deleteMovie
+)
 
 module.exports = Route
