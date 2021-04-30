@@ -23,7 +23,13 @@ const fileFilter = (req, file, cb) => {
 }
 
 // tambahkan limit condition
-const upload = multer({ storage, fileFilter }).single('movieImage')
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 1024 * 1024
+  }
+}).single('movieImage')
 
 const uploadFilter = (req, res, next) => {
   upload(req, res, function (err) {

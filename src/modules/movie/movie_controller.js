@@ -216,17 +216,6 @@ module.exports = {
       const { id } = req.params
       const resultId = await movieModel.getDataById(id)
       if (resultId.length > 0) {
-        resultId.forEach((item) => {
-          console.log(item.movie_image)
-          if (fs.existsSync('src/uploads/' + item.movie_image)) {
-            // Do something
-            fs.unlink('src/uploads/' + item.movie_image, function (err) {
-              if (err) throw err
-              // if no error, file has been deleted successfully
-              console.log('File deleted!')
-            })
-          }
-        })
         const {
           movieName,
           movieCategory,
@@ -247,6 +236,15 @@ module.exports = {
           movie_synopsis: movieSynopsis,
           movie_updated_at: new Date(Date.now())
         }
+        const pathFile = 'src/uploads/' + resultId[0].movie_image
+        console.log(pathFile)
+        if (fs.existsSync(pathFile)) {
+          console.log(true)
+          fs.unlink(pathFile, function (err) {
+            if (err) throw err
+            console.log('File Deleted')
+          })
+        }
         const result = await movieModel.updateData(setData, id)
         return helper.response(res, 200, 'Success update Movie', result)
       } else {
@@ -263,17 +261,15 @@ module.exports = {
       const resultId = await movieModel.getDataById(id)
       console.log(resultId[0].movie_image)
       if (resultId.length > 0) {
-        // resultId.forEach((item) => {
-        // console.log(item.movie_image)
-        if (fs.existsSync('src/uploads/' + resultId[0].movie_name)) {
-          // Do something
-          fs.unlink('src/uploads/' + resultId[0].movie_image, function (err) {
+        const pathFile = 'src/uploads/' + resultId[0].movie_image
+        console.log(pathFile)
+        if (fs.existsSync(pathFile)) {
+          console.log(true)
+          fs.unlink(pathFile, function (err) {
             if (err) throw err
-            // if no error, file has been deleted successfully
-            console.log('true')
+            console.log('File Deleted')
           })
         }
-        // })
         const result = await movieModel.deleteData(id)
         return helper.response(res, 200, 'Success Delete Movie', result)
       } else {

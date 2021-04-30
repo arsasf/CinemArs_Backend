@@ -28,12 +28,11 @@ module.exports = {
   isAdmin: (req, res, next) => {
     console.log('middleware running ')
     console.log(req.decodeToken)
-    // check kondisi apakah user admin atau bukan ?
-    // if (conditioncheckuserrole apakah admin ?) { // req.decodeToken.user_role === ?
-    //   next()
-    // } else {
-    //   mengembalikan respone bahwa endpoin ini tidak bisa diakses selain admin
-    // }
-    next()
+    if (req.decodeToken.user_role === 'admin') {
+      console.log('anda adalah admin')
+      next()
+    } else {
+      return helper.response(res, 403, 'You are not admin')
+    }
   }
 }

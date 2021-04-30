@@ -44,6 +44,7 @@ Route.delete(
   '/:id',
   authMiddleware.authentication,
   isAdmin,
+  uploadFile,
   redisMiddleware.cleardataMovieRedis,
   movieController.deleteMovie
 )
