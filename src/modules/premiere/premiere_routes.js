@@ -1,14 +1,21 @@
 const express = require('express')
 const Route = express.Router()
 const premiereController = require('./premiere_controller')
+const redisMiddleware = require('../../middleware/redis')
 const authMiddleware = require('../../middleware/auth')
 const { isAdmin } = require('../../middleware/auth')
 const uploadFile = require('../../middleware/uploads')
 
-Route.get('/', authMiddleware.authentication, premiereController.getAllPremiere)
+Route.get(
+  '/',
+  authMiddleware.authentication,
+  redisMiddleware.getPremiereRedis,
+  premiereController.getAllPremiere
+)
 Route.get(
   '/:id',
   authMiddleware.authentication,
+  redisMiddleware.getPremiereByIdRedis,
   premiereController.getPremiereById
 )
 Route.get(
@@ -21,6 +28,7 @@ Route.post(
   authMiddleware.authentication,
   isAdmin,
   uploadFile,
+  redisMiddleware.cleardataPremiereRedis,
   premiereController.postPremiere
 )
 Route.patch(
@@ -28,6 +36,7 @@ Route.patch(
   authMiddleware.authentication,
   isAdmin,
   uploadFile,
+  redisMiddleware.cleardataPremiereRedis,
   premiereController.updatePremiere
 )
 Route.delete(
@@ -35,6 +44,7 @@ Route.delete(
   authMiddleware.authentication,
   isAdmin,
   uploadFile,
+  redisMiddleware.cleardataPremiereRedis,
   premiereController.deletePremiere
 )
 module.exports = Route

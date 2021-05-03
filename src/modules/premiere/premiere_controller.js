@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-expressions */
 const helper = require('../../helpers/wrapper')
 const premiereModel = require('./premiere_model')
+const redis = require('redis')
+const client = redis.createClient()
 const fs = require('fs')
 
 module.exports = {
@@ -67,6 +69,11 @@ module.exports = {
         offset
       )
       if (result.length > 0) {
+        client.setex(
+          `getpremiere:${JSON.stringify(req.query)}`,
+          3600,
+          JSON.stringify({ result, pageInfo })
+        )
         return helper.response(res, 200, 'Success Get Data', result, pageInfo)
       } else {
         return helper.response(
@@ -86,6 +93,7 @@ module.exports = {
       const { id } = req.params
       const result = await premiereModel.getDataById(id)
       if (result.length > 0) {
+        client.setex(`getpremiere:${id}`, 3600, JSON.stringify({ result }))
         console.log(`Success Get Data premiere id: ${id} \n`)
         return helper.response(res, 200, 'Success Get Data', result)
       } else {
