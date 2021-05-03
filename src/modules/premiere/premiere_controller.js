@@ -1,48 +1,57 @@
+/* eslint-disable no-unused-expressions */
 const helper = require('../../helpers/wrapper')
 const premiereModel = require('./premiere_model')
+const fs = require('fs')
 
 module.exports = {
   getAllPremiere: async (req, res) => {
     try {
-      let { page, limit, searchByName, sort } = req.query
-      if (!page && !limit && !sort && !searchByName) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-      } else if (!page && limit && sort && searchByName) {
-        page = 1
-      } else if (!page && !limit && sort && searchByName) {
-        page = 1
-        limit = 11
-      } else if (!page && !limit && !sort && searchByName) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-      } else if (!page && !limit && sort && !searchByName) {
-        page = 1
-        limit = 11
-        searchByName = ''
-      } else if (page && !limit && sort && searchByName) {
-        limit = 11
-      } else if (page && !limit && !sort && searchByName) {
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-      } else if (page && !limit && !sort && !searchByName) {
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-      } else if (page && limit && !sort && searchByName) {
-        sort = 'premiere.premiere_id ASC'
-      } else if (page && limit && !sort && !searchByName) {
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-      } else if (page && limit && sort && !searchByName) {
-        searchByName = ''
+      let { page, limit, sort, searchByName } = req.query
+      switch (page) {
+        case undefined:
+          page = 1
+          break
+        case '':
+          page = 1
+          break
+        default:
+          break
+      }
+      switch (limit) {
+        case undefined:
+          limit = 10
+          break
+        case '':
+          limit = 10
+          break
+        default:
+          break
+      }
+      switch (sort) {
+        case undefined:
+          sort = 'premiere.premiere_id ASC'
+          break
+        case '':
+          sort = 'premiere.premiere_id ASC'
+          break
+        default:
+          break
+      }
+      switch (searchByName) {
+        case undefined:
+          searchByName = ''
+          break
+        case '':
+          searchByName = ''
+          break
+        default:
+          break
       }
       page = parseInt(page)
       limit = parseInt(limit)
-      const totalData = await premiereModel.getDataCount(searchByName, { sort })
+      const totalData = await premiereModel.getDataCountAll(searchByName, {
+        sort
+      })
       const totalpage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const pageInfo = {
@@ -57,7 +66,6 @@ module.exports = {
         limit,
         offset
       )
-      console.log(result)
       if (result.length > 0) {
         return helper.response(res, 200, 'Success Get Data', result, pageInfo)
       } else {
@@ -69,152 +77,97 @@ module.exports = {
         )
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
   getPremiereById: async (req, res) => {
     try {
       const { id } = req.params
-      console.log(req.params)
-      let { page, limit, searchByName, sort, searchBydate } = req.query
-      console.log(req.query)
-      if (!page && !limit && !sort && !searchByName && !searchBydate) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (
-        !page &&
-        !limit &&
-        !sort &&
-        !searchByName &&
-        searchBydate === ' 1'
-      ) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        searchBydate = '+1'
-        console.log(req.query)
-      } else if (page && !limit && !sort && !searchByName && !searchBydate) {
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && limit && !sort && !searchByName && !searchBydate) {
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && limit && sort && !searchByName && !searchBydate) {
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && limit && sort && searchByName && !searchBydate) {
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && limit && sort && searchByName && searchBydate) {
-        console.log(req.query)
-      } else if (!page && limit && sort && searchByName && searchBydate) {
-        page = 1
-        console.log(req.query)
-      } else if (!page && limit && !sort && searchByName && searchBydate) {
-        page = 1
-        sort = 'premiere.premiere_id ASC'
-        console.log(req.query)
-      } else if (!page && limit && !sort && !searchByName && searchBydate) {
-        page = 1
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        console.log(req.query)
-      } else if (!page && limit && !sort && !searchByName && !searchBydate) {
-        page = 1
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (!page && limit && sort && !searchByName && !searchBydate) {
-        page = 1
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (!page && limit && !sort && searchByName && !searchBydate) {
-        page = 1
-        sort = 'premiere.premiere_id ASC'
-        searchBydate = ''
-        console.log(req.query)
-      } else if (!page && !limit && sort && !searchByName && !searchBydate) {
-        page = 1
-        limit = 11
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && !limit && sort && !searchByName && !searchBydate) {
-        limit = 11
-        searchByName = ''
-        searchBydate = ''
-        console.log(req.query)
-      } else if (!page && !limit && sort && searchByName && !searchBydate) {
-        page = 1
-        limit = 11
-        searchBydate = ''
-        console.log(req.query)
-      } else if (!page && !limit && sort && !searchByName && searchBydate) {
-        page = 1
-        limit = 11
-        searchByName = ''
-        console.log(req.query)
-      } else if (!page && !limit && !sort && searchByName && !searchBydate) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && !limit && !sort && searchByName && !searchBydate) {
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchBydate = ''
-        console.log(req.query)
-      } else if (page && limit && !sort && searchByName && !searchBydate) {
-        sort = 'premiere.premiere_id ASC'
-        searchBydate = ''
-        console.log(req.query)
-      } else if (!page && !limit && !sort && searchByName && searchBydate) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        console.log(req.query)
-      } else if (!page && !limit && !sort && !searchByName && searchBydate) {
-        page = 1
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        console.log(req.query)
-      } else if (page && !limit && !sort && !searchByName && searchBydate) {
-        limit = 11
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        console.log(req.query)
-      } else if (page && limit && !sort && !searchByName && searchBydate) {
-        sort = 'premiere.premiere_id ASC'
-        searchByName = ''
-        console.log(req.query)
+      const result = await premiereModel.getDataById(id)
+      if (result.length > 0) {
+        console.log(`Success Get Data premiere id: ${id} \n`)
+        return helper.response(res, 200, 'Success Get Data', result)
+      } else {
+        return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
       }
+    } catch (error) {
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  getPremiereByMovieId: async (req, res) => {
+    try {
+      const { id } = req.params
+      let {
+        page,
+        limit,
+        sort,
+        searchByLocation,
+        searchByReleaseDate
+      } = req.query
+      switch (page) {
+        case undefined:
+          page = 1
+          break
+        case '':
+          page = 1
+          break
+        default:
+          break
+      }
+      switch (limit) {
+        case undefined:
+          limit = 10
+          break
+        case '':
+          limit = 10
+          break
+        default:
+          break
+      }
+      switch (sort) {
+        case undefined:
+          sort = 'premiere.premiere_id ASC'
+          break
+        case '':
+          sort = 'premiere.premiere_id ASC'
+          break
+        default:
+          break
+      }
+      switch (searchByLocation) {
+        case undefined:
+          searchByLocation = 'Banjarmasin'
+          break
+        case '':
+          searchByLocation = 'Banjarmasin'
+          break
+        default:
+          break
+      }
+      switch (searchByReleaseDate) {
+        case undefined:
+          searchByReleaseDate = '2021-05-29'
+          break
+        case '':
+          searchByReleaseDate = '2021-05-29'
+          break
+        default:
+          break
+      }
+      console.log('get premiere by movie id')
+      console.log(req.params)
       console.log(req.query)
-      page = parseInt(page)
-      limit = parseInt(limit)
-      const totalData = await premiereModel.getDataCount(
+      const totalData = await premiereModel.getDataCountByMovieId(
         id,
-        searchByName,
         {
           sort
         },
-        searchBydate
+        searchByLocation,
+        searchByReleaseDate
       )
-      console.log(totalData)
+      page = parseInt(page)
+      limit = parseInt(limit)
       const totalpage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const pageInfo = {
@@ -223,20 +176,27 @@ module.exports = {
         limit,
         totalData
       }
-      const result = await premiereModel.getDataById(
+      const result = await premiereModel.getDataByMovieId(
         id,
-        searchByName,
         { sort },
-        searchBydate,
+        searchByLocation,
+        searchByReleaseDate,
         limit,
         offset
       )
       if (result.length > 0) {
+        for (const value of result) {
+          value.show_time_clock = await premiereModel.getShowTimeClock(
+            value.premiere_id,
+            value.show_time_date
+          )
+        }
         return helper.response(res, 200, 'Success Get Data', result, pageInfo)
       } else {
-        return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
+        return helper.response(res, 404, `Data ${id} Not Found !`, null)
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
@@ -246,18 +206,22 @@ module.exports = {
       const {
         movieId,
         locationId,
-        showTimeId,
+        showTimeDate,
         premiereName,
         premierePrice
       } = req.body
       const setData = {
         movie_id: movieId,
         location_id: locationId,
-        show_time_id: showTimeId,
+        show_time_date: showTimeDate,
         premiere_name: premiereName,
-        premiere_price: premierePrice
+        premiere_price: premierePrice,
+        premiere_image: req.file ? req.file.filename : ''
       }
       const result = await premiereModel.createData(setData)
+      console.log(
+        `Success create movie Id : ${result.id}  and add file : ${result.movie_image}\n`
+      )
       return helper.response(res, 200, 'Success Create Premiere!', result)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
@@ -271,25 +235,38 @@ module.exports = {
         const {
           movieId,
           locationId,
-          showTimeId,
+          showTimeDate,
           premiereName,
           premierePrice
         } = req.body
         const setData = {
           movie_id: movieId,
           location_id: locationId,
-          show_time_id: showTimeId,
+          show_time_date: showTimeDate,
+          premiere_image: req.file ? req.file.filename : '',
           premiere_name: premiereName,
           premiere_price: premierePrice,
           premiere_updated_at: new Date(Date.now())
         }
+        console.log(resultId[0].premiere_image)
+        const pathFile = 'src/uploads/' + resultId[0].premiere_image
+        if (fs.existsSync(pathFile)) {
+          fs.unlink(pathFile, function (err) {
+            if (err) throw err
+            console.log('Oldest Image Success Deleted')
+          })
+        }
         const result = await premiereModel.updateData(setData, id)
-        console.log(result, setData, id)
+        console.log(
+          `Success update movie Id : ${id} and add image ${result.premiere_image} \n`
+        )
+
         return helper.response(res, 200, 'Success update Premiere!', result)
       } else {
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
@@ -298,7 +275,16 @@ module.exports = {
       const { id } = req.params
       const resultId = await premiereModel.getDataById(id)
       if (resultId.length > 0) {
+        const pathFile = 'src/uploads/' + resultId[0].premiere_image
+        console.log(pathFile)
+        if (fs.existsSync(pathFile)) {
+          fs.unlink(pathFile, function (err) {
+            if (err) throw err
+            console.log('Image was Deleted')
+          })
+        }
         const result = await premiereModel.deleteData(id)
+        console.log(`Success Delete movie Id : ${id} \n`)
         return helper.response(res, 200, 'Success Delete Premiere!', result)
       } else {
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)

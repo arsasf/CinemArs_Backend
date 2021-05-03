@@ -22,25 +22,21 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-// tambahkan limit condition
 const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 1024 * 1024
+    fileSize: 3 * 1024 * 1024
   }
-}).single('movieImage')
+}).single('image')
 
 const uploadFilter = (req, res, next) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
       return helper.response(res, 401, err.message, null)
     } else if (err) {
-      // An unknown error occurred when uploading.
       return helper.response(res, 401, err.message, null)
     }
-    // Everything went fine.
     next()
   })
 }

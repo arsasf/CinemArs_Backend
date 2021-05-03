@@ -5,10 +5,8 @@ module.exports = {
   authentication: (req, res, next) => {
     // console.log('PROSES AUTHENTICATON MIDDLEWARE RUNNING')
     let token = req.headers.authorization
-    // console.log(token)
     if (token) {
       token = token.split(' ')[1]
-      // proses validasi token
       jwt.verify(token, 'RAHASIA', (error, result) => {
         if (
           (error && error.name === 'JsonWebTokenError') ||
@@ -16,8 +14,8 @@ module.exports = {
         ) {
           return helper.response(res, 403, error.message)
         } else {
-          // console.log(result) //berisi data sebelum di enkripsi
           req.decodeToken = result
+          console.log('\nAunthentication is success')
           next()
         }
       })
@@ -26,13 +24,23 @@ module.exports = {
     }
   },
   isAdmin: (req, res, next) => {
-    console.log('middleware running ')
-    console.log(req.decodeToken)
     if (req.decodeToken.user_role === 'admin') {
-      console.log('anda adalah admin')
+      console.log(`=====> Welcome Admin ${req.decodeToken.user_name} ! <=====`)
       next()
     } else {
-      return helper.response(res, 403, 'You are not admin')
+      return helper.response(res, 403, 'Sorry, you are not admin')
+    }
+  },
+  isUser: (req, res, next) => {
+    if (JSON.stringify(req.decodeToken.user_id) === req.params.id) {
+      console.log(`=====> Welcome User ${req.decodeToken.user_name} ! <=====`)
+      next()
+    } else {
+      return helper.response(
+        res,
+        403,
+        'Sorry, you can not access this account!'
+      )
     }
   }
 }

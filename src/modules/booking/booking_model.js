@@ -22,6 +22,29 @@ module.exports = {
       )
     })
   },
+  getDataByUserId: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT * FROM booking join premiere ON premiere.premiere_id = booking.premiere_id JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON location.location_id = premiere.location_id WHERE booking.user_id = ?',
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getDataDashboard: (movie, premiere, location) => {
+    console.log(movie, premiere, location)
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT MONTH(booking_created_at) AS month, SUM(booking_total_price) AS total from booking JOIN premiere ON premiere.premiere_id = booking.premiere_id JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON location.location_id = premiere.location_id WHERE movie.movie_name LIKE "%"?"%" AND premiere.premiere_name LIKE "%"?"%" AND location.location_city LIKE "%"?"%" GROUP BY MONTH(booking_created_at)',
+        [movie, premiere, location],
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   createDataBooking: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query(

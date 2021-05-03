@@ -3,48 +3,62 @@ const bcrypt = require('bcrypt')
 const authModel = require('./auth_model')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
-// const SMTPConnection = require('nodemailer/lib/smtp-connection')
-// const smtpTransport = require('nodemailer-smtp-transport')
+const fs = require('fs')
+require('dotenv').config()
 
 module.exports = {
   register: async (req, res) => {
     try {
       const { userName, userEmail, userPassword } = req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encryptPassword = bcrypt.hashSync(userPassword, salt)
+      console.log(`Before encrypt = ${userPassword}`)
+      console.log(`after encrypt = ${encryptPassword}`)
       const checkEmailUser = await authModel.getDataUser(userEmail)
-      console.log(checkEmailUser.length)
       if (checkEmailUser.length === 0) {
-        console.log(true)
+        const setData = {
+          user_name: userName,
+          user_email: userEmail,
+          user_password: encryptPassword
+        }
+        const result = await authModel.register(setData)
+        delete result.user_password
         const transporter = nodemailer.createTransport({
-          host: 'smtp.ethereal.email',
+          host: 'smtp.gmail.com',
           port: 587,
+          secure: false, // true for 465, false for other ports
           auth: {
-            user: 'ike.thompson5@ethereal.email',
-            pass: 'Kq4aEzYFvmUPTxG2Da'
+            user: process.env.SMTP_EMAIL,
+            pass: process.env.SMTP_PASSWORD
           }
         })
-        // send email
-        const result = await transporter.sendMail({
-          from: 'ike.thompson5@ethereal.email',
+        const mailOptions = {
+          from: `"CinemArs" <${process.env.SMTP_EMAIL}>`,
           to: userEmail,
-          subject: 'Test Email Subject',
-          html: '<p>Hai, Welcome </p>'
+          subject: 'CinemArs - Activation Email',
+          html: `<p>
+                      <p>
+                        <b>Hello ${userName}, Welcome to CinemArs Ticket Booking. Click here to activate your account</b>
+                      </p>
+                      <p>
+                        <a href='http://localhost:3001/api/v1/auth/verify/${result.id}'>Click !</>
+                      </p>
+                    </p>`
+        }
+        await transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error)
+            return helper.response(res, 400, 'Email not send !')
+          } else {
+            console.log('Email sent:' + info.response)
+          }
         })
-        console.log(result)
-        console.log('Message sent: %s', result.messageId)
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(result))
-        // const salt = bcrypt.genSaltSync(10)
-        // const encryptPassword = bcrypt.hashSync(userPassword, salt)
-        // console.log(`Before encrypt = ${userPassword}`)
-        // console.log(`after encrypt = ${encryptPassword}`)
-        // const setData = {
-        //   user_name: userName,
-        //   user_email: userEmail,
-        //   user_password: encryptPassword,
-        //   user_status: 1
-        // }
-        // const result = await authModel.register(setData)
-        // delete result.user_password
-        // return helper.response(res, 200, 'Success Register User', result)
+        return helper.response(
+          res,
+          200,
+          'Success Register User, Please check your email to activation!',
+          result
+        )
       } else {
         return helper.response(
           res,
@@ -53,6 +67,7 @@ module.exports = {
         )
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 408, 'Bad Request', error)
     }
   },
@@ -62,23 +77,17 @@ module.exports = {
       const checkEmailUser = await authModel.getDataConditions({
         user_email: userEmail
       })
-      // console.log('checkEmailUser')
-      // [1] proses pengecekan apakah email ada di database atau tidak?
       if (checkEmailUser.length > 0) {
-        // console.log(checkEmailUser)
         const checkPassword = bcrypt.compareSync(
           userPassword,
           checkEmailUser[0].user_password
         )
-        console.log(checkPassword)
-        // [2] proses pengecekan apakah password yang dimasukan sesuai atau tidak
         if (checkPassword) {
           const payload = checkEmailUser[0]
           delete payload.user_password
           const token = jwt.sign({ ...payload }, 'RAHASIA', {
             expiresIn: '24h'
           })
-          // console.log(token)
           const result = { ...payload, token }
           return helper.response(res, 200, 'Success login !', result)
         } else {
@@ -91,10 +100,74 @@ module.exports = {
       return helper.response(res, 408, 'Bad Request', error)
     }
   },
-  getUserAll: async (req, res) => {
+  verify: async (req, res) => {
     try {
-      const result = await authModel.getDataUser()
-      return helper.response(res, 200, 'Success Get Data User !', result)
+      const { hash } = req.params
+      const result = await authModel.verifyRegister(hash)
+      return helper.response(res, 200, 'Success Verifikasi !', result)
+    } catch (error) {
+      return helper.response(res, 408, 'Bad Request', error)
+    }
+  },
+  updateProfile: async (req, res) => {
+    try {
+      const { id } = req.params
+      const resultId = await authModel.getDataUserById(id)
+      if (resultId.length > 0) {
+        const {
+          userFirstName,
+          userLastName,
+          userEmail,
+          userPhoneNumber
+        } = req.body
+        const setData = {
+          user_image: req.file ? req.file.filename : '',
+          user_first_name: userFirstName,
+          user_last_name: userLastName,
+          user_email: userEmail,
+          user_phone_number: userPhoneNumber,
+          user_updated_at: new Date(Date.now())
+        }
+        const pathFile = 'src/uploads/' + resultId[0].user_image
+        if (fs.existsSync(pathFile)) {
+          fs.unlink(pathFile, function (err) {
+            if (err) throw err
+            console.log('Oldest Image Success Deleted')
+          })
+        }
+        const result = await authModel.updateData(setData, id)
+        console.log(
+          `Success update movie Id : ${id} and update image : ${result.user_image}\n`
+        )
+        return helper.response(res, 200, 'Success update Movie', result)
+      }
+    } catch (error) {
+      return helper.response(res, 408, 'Bad Request', error)
+    }
+  },
+  updatePasswordUser: async (req, res) => {
+    try {
+      const { id } = req.params
+      const { userNewPassword, userConfirmPassword } = req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encryptPassword = bcrypt.hashSync(userNewPassword, salt)
+      console.log(`Before encrypt = ${userNewPassword}`)
+      console.log(`after encrypt = ${encryptPassword}`)
+      if (userNewPassword !== userConfirmPassword) {
+        return helper.response(
+          res,
+          403,
+          'New Password and Confirm Password are different, please check again!'
+        )
+      } else {
+        const setData = {
+          user_password: encryptPassword
+        }
+        const result = await authModel.updateData(setData, id)
+        delete result.user_password
+        console.log('Sucess Update New Password !')
+        return helper.response(res, 200, 'Success Update New Password', result)
+      }
     } catch (error) {
       return helper.response(res, 408, 'Bad Request', error)
     }

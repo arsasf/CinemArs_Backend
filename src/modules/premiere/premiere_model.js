@@ -1,15 +1,12 @@
 const connection = require('../../config/mysql')
 
 module.exports = {
-  getDataCount: (id, searchByName, { sort }, searchBydate) => {
-    console.log(id, searchByName, { sort }, searchBydate)
+  getDataCountAll: (searchByName, { sort }) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT COUNT(*) as total  FROM((movie LEFT JOIN  premiere ON movie.movie_id = premiere.movie_id) LEFT JOIN location ON location.location_id=premiere.location_id)LEFT JOIN show_time ON premiere.show_time_id = show_time.premiere_id WHERE premiere.movie_id = ? AND location.location_city LIKE "%"?"%" AND Date(show_time.show_time_date) AND show_time.show_time_date LIKE "%"?"%" ORDER BY ${sort}`,
-        [id, searchByName, searchBydate],
+        `SELECT COUNT(*) as total FROM premiere JOIN movie on premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE premiere.premiere_name LIKE "%"?"%" ORDER BY ${sort}`,
+        searchByName,
         (error, result) => {
-          console.log(error)
-          console.log(result)
           !error ? resolve(result[0].total) : reject(new Error(error))
         }
       )
@@ -18,35 +15,71 @@ module.exports = {
   getDataAll: (searchByName, { sort }, limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT premiere.premiere_id, premiere.premiere_img, movie.movie_name, location.location_city, location.location_address, 
-        premiere.premiere_name, premiere.premiere_price, show_time.show_time_date, show_time.show_time_clock 
-        FROM ((premiere premiere LEFT JOIN movie movie ON premiere.movie_id = movie.movie_id) 
-        LEFT JOIN location location on premiere.location_id = location.location_id) 
-        LEFT JOIN show_time show_time ON premiere.show_time_id = show_time.show_time_id
-        WHERE premiere_name LIKE "%"?"%" ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        `SELECT * FROM premiere JOIN movie on premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE premiere.premiere_name LIKE "%"?"%" ORDER BY ${sort} LIMIT ? OFFSET ?`,
         [searchByName, limit, offset],
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
-          console.log(result)
-          console.log(error)
         }
       )
     })
   },
-  getDataById: (id, searchByName, { sort }, searchBydate, limit, offset) => {
-    console.log(id)
+  getDataById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT premiere.premiere_id, movie.movie_id,location.location_id, show_time.show_time_id, premiere.premiere_img, location.location_address, show_time.show_time_clock, premiere.premiere_name, premiere.premiere_price FROM((movie movie LEFT JOIN premiere premiere ON movie.movie_id = premiere.movie_id) LEFT JOIN location location ON location.location_id=premiere.location_id)LEFT JOIN show_time show_time ON premiere.show_time_id = show_time.premiere_id WHERE premiere.movie_id = ? AND location.location_city LIKE "%"?"%" AND Date(show_time.show_time_date) AND show_time.show_time_date LIKE "%"?"%" ORDER BY ${sort} LIMIT ? OFFSET ?`,
-        [id, searchByName, searchBydate, limit, offset],
+        'SELECT * FROM premiere JOIN movie on premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE premiere.premiere_id = ?',
+        id,
         (error, result) => {
-          console.log(error)
-          console.log(result)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
     })
   },
+  getDataCountByMovieId: (
+    id,
+    { sort },
+    searchByLocation,
+    searchByReleaseDate
+  ) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT(*) as total FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ? AND location.location_city = ? AND premiere.show_time_date= ? ORDER BY ${sort}`,
+        [id, searchByLocation, searchByReleaseDate],
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getDataByMovieId: (
+    id,
+    { sort },
+    searchByLocation,
+    searchByReleaseDate,
+    limit,
+    offset
+  ) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ? AND location.location_city = ? AND premiere.show_time_date= ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        [id, searchByLocation, searchByReleaseDate, limit, offset],
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getShowTimeClock: (id, date) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT show_time.show_time_id, show_time.show_time_clock FROM(show_time JOIN premiere ON premiere.premiere_id = show_time.premiere_id) WHERE premiere.premiere_id = ? and premiere.show_time_date = ?',
+        [id, date],
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+
   createData: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query(

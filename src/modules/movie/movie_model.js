@@ -2,7 +2,7 @@ const connection = require('../../config/mysql')
 
 module.exports = {
   getDataCount: ({ month }, searchByName, { sort }) => {
-    console.log({ month })
+    console.log({ month }, searchByName, { sort })
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT COUNT(*) AS total FROM movie WHERE movie_name LIKE "%"?"%" AND MONTH(movie_release_date) = ${month} ORDER BY ${sort}`,
@@ -22,8 +22,6 @@ module.exports = {
         [searchByName, limit, offset],
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
-          // console.log(error)
-          // console.log(result)
         }
       )
     })
@@ -61,15 +59,12 @@ module.exports = {
         'UPDATE movie SET ? WHERE movie_id = ?',
         [setData, id],
         (error, result) => {
-          console.log(error)
-          console.log(result)
           if (!error) {
             const newResult = {
               id: id,
               ...setData
             }
             resolve(newResult)
-            console.log(newResult)
           } else {
             reject(new Error(error))
           }

@@ -1,13 +1,30 @@
 const express = require('express')
-const { isAdmin } = require('../../middleware/auth')
-// const { isAdmin } = require('../../middleware/auth')
+const { isUser } = require('../../middleware/auth')
 const Route = express.Router()
 const authMiddleware = require('../../middleware/auth')
+const uploadFile = require('../../middleware/uploads')
+const {
+  register,
+  login,
+  verify,
+  updateProfile,
+  updatePasswordUser
+} = require('./auth_controller')
 
-const { register, login, getUserAll } = require('./auth_controller')
-
-Route.post('/login', authMiddleware.authentication, isAdmin, login)
+Route.post('/login', login)
 Route.post('/register', register)
-Route.get('/user', getUserAll)
-
+Route.get('/verify/:hash', verify)
+Route.patch(
+  '/update-profile/:id',
+  authMiddleware.authentication,
+  isUser,
+  uploadFile,
+  updateProfile
+)
+Route.patch(
+  '/update-password/:id',
+  authMiddleware.authentication,
+  isUser,
+  updatePasswordUser
+)
 module.exports = Route
