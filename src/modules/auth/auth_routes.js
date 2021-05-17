@@ -8,12 +8,14 @@ const {
   login,
   verify,
   updateProfile,
-  updatePasswordUser
+  updatePasswordUser,
+  getDataUserById
 } = require('./auth_controller')
 
 Route.post('/login', login)
 Route.post('/register', register)
 Route.get('/verify/:hash', verify)
+Route.get('/:id', authMiddleware.authentication, isUser, getDataUserById)
 Route.patch(
   '/update-profile/:id',
   authMiddleware.authentication,

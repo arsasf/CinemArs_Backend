@@ -67,7 +67,6 @@ module.exports = {
       const totalData = await movieModel.getDataCount({ month }, searchByName, {
         sort
       })
-      console.log(totalData)
       const totalpage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const pageInfo = {
@@ -90,6 +89,7 @@ module.exports = {
       )
       return helper.response(res, 200, 'Success Get Data', result, pageInfo)
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
@@ -113,16 +113,102 @@ module.exports = {
         movieName,
         movieCategory,
         movieReleaseDate,
-        movieDuration,
+        movieDurationHours,
+        movieDurationMinutes,
         movieDirectedBy,
         movieCasts,
         movieSynopsis
       } = req.body
+      switch (movieName) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Movie Name')
+        case '':
+          return helper.response(res, 404, 'Please Input Movie Name')
+        default:
+          break
+      }
+      switch (movieCategory) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Category')
+        case '':
+          return helper.response(res, 404, 'Please Input Category')
+        default:
+          break
+      }
+      switch (movieReleaseDate) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Release Date')
+        case '':
+          return helper.response(res, 404, 'Please Input Release Date')
+        default:
+          break
+      }
+      switch (movieDurationHours) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Duration Hours')
+        case '':
+          return helper.response(res, 404, 'Please Input Duration Hours')
+        case movieDurationHours.length > 1:
+          return helper.response(
+            res,
+            404,
+            'Duration Hours Wrong, Please Check Again'
+          )
+
+        default:
+          break
+      }
+      switch (movieDurationMinutes) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Duration Minutes')
+        case '':
+          return helper.response(res, 404, 'Please Input Duration Minutes')
+        case movieDurationMinutes.length > 1:
+          return helper.response(
+            res,
+            404,
+            'Duration Minutes Wrong, Please Check Again'
+          )
+        default:
+          break
+      }
+      switch (movieDirectedBy) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Director')
+        case '':
+          return helper.response(res, 404, 'Please Input Director')
+        default:
+          break
+      }
+      switch (movieCasts) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Casts')
+        case '':
+          return helper.response(res, 404, 'Please Input Casts')
+        default:
+          break
+      }
+      switch (movieSynopsis) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input Synopsis')
+        case '':
+          return helper.response(res, 404, 'Please Input Synopsis')
+        default:
+          break
+      }
+      switch (req.file) {
+        case undefined:
+          return helper.response(res, 404, 'Please Input File Image')
+        case '':
+          return helper.response(res, 404, 'Please Input File Image')
+        default:
+          break
+      }
       const setData = {
         movie_name: movieName,
         movie_category: movieCategory,
         movie_release_date: movieReleaseDate,
-        movie_duration: movieDuration,
+        movie_duration: `${movieDurationHours} hours ${movieDurationMinutes} minutes`,
         movie_directed_by: movieDirectedBy,
         movie_casts: movieCasts,
         movie_synopsis: movieSynopsis,
@@ -134,6 +220,7 @@ module.exports = {
       )
       return helper.response(res, 200, 'Success Create Movie', result)
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
@@ -147,22 +234,182 @@ module.exports = {
           movieName,
           movieCategory,
           movieReleaseDate,
-          movieDuration,
+          movieDurationHours,
+          movieDurationMinutes,
           movieDirectedBy,
           movieCasts,
           movieSynopsis
         } = req.body
+        console.log(movieDurationHours.length)
+        switch (movieName) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Movie Name'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Movie Name'
+            )
+          default:
+            break
+        }
+        switch (movieCategory) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Category'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Category'
+            )
+          default:
+            break
+        }
+        switch (movieReleaseDate) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Release Date'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Release Date'
+            )
+          default:
+            break
+        }
+        switch (movieDurationHours) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Duration Hours'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Duration Hours'
+            )
+          case movieDurationHours.length > 1:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Input Duration Hours Wrong. Please Check Again'
+            )
+          default:
+            break
+        }
+        switch (movieDurationMinutes) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Duration Minutes'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Duration Minutes'
+            )
+          case movieDurationMinutes.length > 1:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Input Duration Minutes Wrong. Please Check Again'
+            )
+          default:
+            break
+        }
+        switch (movieDirectedBy) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Director'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Director'
+            )
+          default:
+            break
+        }
+        switch (movieCasts) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Casts'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Casts'
+            )
+          default:
+            break
+        }
+        switch (movieSynopsis) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Synopsis'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Synopsis'
+            )
+          default:
+            break
+        }
+        switch (req.file) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Image'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Image'
+            )
+          default:
+            break
+        }
         const setData = {
           movie_name: movieName,
           movie_image: req.file ? req.file.filename : '',
           movie_category: movieCategory,
           movie_release_date: movieReleaseDate,
-          movie_duration: movieDuration,
+          movie_duration: `${movieDurationHours} hours ${movieDurationMinutes} minutes`,
           movie_directed_by: movieDirectedBy,
           movie_casts: movieCasts,
           movie_synopsis: movieSynopsis,
           movie_updated_at: new Date(Date.now())
         }
+        const result = await movieModel.updateData(setData, id)
+        console.log(`Success update movie Id : ${id} \n`)
         const pathFile = 'src/uploads/' + resultId[0].movie_image
         if (fs.existsSync(pathFile)) {
           fs.unlink(pathFile, function (err) {
@@ -170,10 +417,9 @@ module.exports = {
             console.log('Oldest Image Success Deleted')
           })
         }
-        const result = await movieModel.updateData(setData, id)
-        console.log(`Success update movie Id : ${id} \n`)
         return helper.response(res, 200, 'Success update Movie', result)
       } else {
+        console.log(res)
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
       }
     } catch (error) {

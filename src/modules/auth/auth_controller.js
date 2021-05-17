@@ -109,6 +109,30 @@ module.exports = {
       return helper.response(res, 408, 'Bad Request', error)
     }
   },
+  getDataUserById: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result1 = await authModel.getDataUserById(id)
+      if (result1[0].user_image === '') {
+        const setData = {
+          user_image: 'Image.not.availabe.png'
+        }
+        let resultImage = await authModel.updateData(setData, id)
+        resultImage = await authModel.getDataUserById(resultImage.id)
+        return helper.response(
+          res,
+          200,
+          'set Image default success',
+          resultImage
+        )
+      }
+      const result = await authModel.getDataUserById(id)
+      return helper.response(res, 200, 'Success get data', result)
+    } catch (error) {
+      console.log(error)
+      return helper.response(res, 408, 'Bad Request', error)
+    }
+  },
   updateProfile: async (req, res) => {
     try {
       const { id } = req.params
@@ -120,6 +144,70 @@ module.exports = {
           userEmail,
           userPhoneNumber
         } = req.body
+        switch (userFirstName) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Please click update profile near info, before update changes'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Please click update profile  near info, before update changes'
+            )
+          default:
+            break
+        }
+        switch (userLastName) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Please click update profile near info, before update changes'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Please click update profile  near info, before update changes'
+            )
+          default:
+            break
+        }
+        switch (userPhoneNumber) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Please click update profile near info, before update changes'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Please click update profile  near info, before update changes'
+            )
+          default:
+            break
+        }
+        switch (req.file) {
+          case undefined:
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Image'
+            )
+          case '':
+            return helper.response(
+              res,
+              404,
+              'Update Failed, Please Input Image'
+            )
+          default:
+            break
+        }
         const setData = {
           user_image: req.file ? req.file.filename : '',
           user_first_name: userFirstName,
@@ -149,6 +237,38 @@ module.exports = {
     try {
       const { id } = req.params
       const { userNewPassword, userConfirmPassword } = req.body
+      switch (userNewPassword) {
+        case undefined:
+          return helper.response(
+            res,
+            404,
+            'Update Failed, Please Input New Password'
+          )
+        case '':
+          return helper.response(
+            res,
+            404,
+            'Update Failed, Please Input New Password'
+          )
+        default:
+          break
+      }
+      switch (userConfirmPassword) {
+        case undefined:
+          return helper.response(
+            res,
+            404,
+            'Update Failed, Please Input Confirm Password'
+          )
+        case '':
+          return helper.response(
+            res,
+            404,
+            'Update Failed, Please Input Confirm Password'
+          )
+        default:
+          break
+      }
       const salt = bcrypt.genSaltSync(10)
       const encryptPassword = bcrypt.hashSync(userNewPassword, salt)
       console.log(`Before encrypt = ${userNewPassword}`)

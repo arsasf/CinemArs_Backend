@@ -16,6 +16,7 @@ const { isAdmin } = require('../../middleware/auth')
 Route.get(
   '/',
   authMiddleware.authentication,
+  uploadFile,
   redisMiddleware.getMovieRedis,
   movieController.getAllMovies
 )
@@ -25,7 +26,7 @@ Route.get(
   movieController.getMovieById
 )
 Route.post(
-  '/:id',
+  '/',
   authMiddleware.authentication,
   authMiddleware.isAdmin,
   uploadFile,

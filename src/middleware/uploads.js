@@ -42,5 +42,3 @@ const uploadFilter = (req, res, next) => {
 }
 
 module.exports = uploadFilter
-
-module.exports = upload

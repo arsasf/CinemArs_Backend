@@ -11,6 +11,10 @@ About feature etc :
 3. CRUD LOCATION
 4. CRUD SHOW_TIME
 5. BOOKING & SEAT BOOKING
+6. LOGIN AND REGISTER USER
+7. VERIFICATION EMAIL
+8. REDIS
+9. UPLOAD FILE
 
 [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
