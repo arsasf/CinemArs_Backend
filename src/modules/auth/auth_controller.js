@@ -9,7 +9,10 @@ require('dotenv').config()
 module.exports = {
   register: async (req, res) => {
     try {
+      console.log('run')
       const { userName, userEmail, userPassword } = req.body
+      console.log(req.body)
+
       const salt = bcrypt.genSaltSync(10)
       const encryptPassword = bcrypt.hashSync(userPassword, salt)
       console.log(`Before encrypt = ${userPassword}`)
@@ -138,12 +141,8 @@ module.exports = {
       const { id } = req.params
       const resultId = await authModel.getDataUserById(id)
       if (resultId.length > 0) {
-        const {
-          userFirstName,
-          userLastName,
-          userEmail,
-          userPhoneNumber
-        } = req.body
+        const { userFirstName, userLastName, userEmail, userPhoneNumber } =
+          req.body
         switch (userFirstName) {
           case undefined:
             return helper.response(

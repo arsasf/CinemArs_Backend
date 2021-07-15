@@ -1,10 +1,21 @@
 const connection = require('../../config/mysql')
+const midtransClient = require('midtrans-client')
 
 module.exports = {
   getDataAll: () => {
     return new Promise((resolve, reject) => {
       connection.query(
         'SELECT booking.booking_id, premiere.premiere_name, premiere.premiere_price, booking.booking_ticket, booking.booking_total_price, booking.booking_payment_method, booking.booking_status, booking.booking_created_at, booking.booking_updated_at FROM booking booking LEFT JOIN premiere premiere on booking.premiere_id = premiere.premiere_id',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getDataBooking: (movieId, premiereId, showTimeId) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT movie.movie_name , premiere.premiere_image, premiere.premiere_name, premiere.show_time_date, premiere.premiere_price, show_time.show_time_clock FROM (premiere) JOIN movie ON premiere.movie_id = movie.movie_id JOIN show_time ON premiere.premiere_id = show_time.premiere_id WHERE movie.movie_id = ${movieId} AND premiere.premiere_id = ${premiereId} AND show_time.show_time_id = ${showTimeId}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
@@ -63,6 +74,37 @@ module.exports = {
           }
         }
       )
+    })
+  },
+  postOrderMidtrans: ({ orderId, orderAmount }) => {
+    return new Promise((resolve, reject) => {
+      const snap = new midtransClient.Snap({
+        isProduction: false,
+        serverKey: 'SB-Mid-server-cQ2SdW4dl4T4ETGWBbXzM6BS',
+        clientKey: 'SB-Mid-client-Br8qu0hv-PGs4oyU'
+      })
+      const parameter = {
+        transaction_details: {
+          order_id: orderId,
+          gross_amount: orderAmount
+        },
+        credit_card: {
+          secure: true
+        }
+      }
+      snap
+        .createTransaction(parameter)
+        .then((transaction) => {
+          // transaction token
+          const transactionToken = transaction.token
+          console.log('transaction:', transaction)
+          console.log('transactionToken:', transactionToken)
+          resolve(transaction.redirect_url)
+        })
+        .catch((error) => {
+          console.log(error)
+          reject(error)
+        })
     })
   }
 }

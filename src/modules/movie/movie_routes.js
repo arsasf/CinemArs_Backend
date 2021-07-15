@@ -13,13 +13,7 @@ const { isAdmin } = require('../../middleware/auth')
 // route cara pemanggilan 2
 // Route.get('/hello', movieController.sayHello)
 
-Route.get(
-  '/',
-  authMiddleware.authentication,
-  uploadFile,
-  redisMiddleware.getMovieRedis,
-  movieController.getAllMovies
-)
+Route.get('/', movieController.getAllMovies)
 Route.get(
   '/:id',
   redisMiddleware.getMovieByIdRedis,

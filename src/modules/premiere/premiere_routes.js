@@ -6,16 +6,10 @@ const authMiddleware = require('../../middleware/auth')
 const { isAdmin } = require('../../middleware/auth')
 const uploadFile = require('../../middleware/uploads')
 
-Route.get(
-  '/',
-  authMiddleware.authentication,
-  redisMiddleware.getPremiereRedis,
-  premiereController.getAllPremiere
-)
+Route.get('/', authMiddleware.authentication, premiereController.getAllPremiere)
 Route.get(
   '/:id',
   authMiddleware.authentication,
-  redisMiddleware.getPremiereByIdRedis,
   premiereController.getPremiereById
 )
 Route.get(

@@ -106,73 +106,18 @@ module.exports = {
   getPremiereByMovieId: async (req, res) => {
     try {
       const { id } = req.params
-      let {
-        page,
-        limit,
-        sort,
-        searchByLocation,
-        searchByReleaseDate
-      } = req.query
-      switch (page) {
-        case undefined:
-          page = 1
-          break
-        case '':
-          page = 1
-          break
-        default:
-          break
-      }
-      switch (limit) {
-        case undefined:
-          limit = 10
-          break
-        case '':
-          limit = 10
-          break
-        default:
-          break
-      }
-      switch (sort) {
-        case undefined:
-          sort = 'premiere.premiere_id ASC'
-          break
-        case '':
-          sort = 'premiere.premiere_id ASC'
-          break
-        default:
-          break
-      }
-      switch (searchByLocation) {
-        case undefined:
-          searchByLocation = 'Banjarmasin'
-          break
-        case '':
-          searchByLocation = 'Banjarmasin'
-          break
-        default:
-          break
-      }
-      switch (searchByReleaseDate) {
-        case undefined:
-          searchByReleaseDate = '2021-05-29'
-          break
-        case '':
-          searchByReleaseDate = '2021-05-29'
-          break
-        default:
-          break
-      }
-      console.log('get premiere by movie id')
-      console.log(req.params)
-      console.log(req.query)
+      let { page, limit, sort, searchByLocation, searchByDate } = req.query
+      page = page ? parseInt(page) : 1
+      limit = limit ? parseInt(limit) : 9
+      sort = sort || 'premiere.premiere_id ASC'
+      searchByLocation = searchByLocation || ''
+      searchByDate =
+        searchByDate !== '' ? `${searchByDate}` : 'premiere.show_time_date'
+      console.log(page, limit, sort, searchByLocation, searchByDate)
       const totalData = await premiereModel.getDataCountByMovieId(
         id,
-        {
-          sort
-        },
         searchByLocation,
-        searchByReleaseDate
+        searchByDate
       )
       page = parseInt(page)
       limit = parseInt(limit)
@@ -188,15 +133,14 @@ module.exports = {
         id,
         { sort },
         searchByLocation,
-        searchByReleaseDate,
+        searchByDate,
         limit,
         offset
       )
       if (result.length > 0) {
         for (const value of result) {
-          value.show_time_clock = await premiereModel.getShowTimeClock(
-            value.premiere_id,
-            value.show_time_date
+          value.show_time_clock = await premiereModel.getShowTime(
+            value.premiere_id
           )
         }
         return helper.response(res, 200, 'Success Get Data', result, pageInfo)
@@ -211,13 +155,8 @@ module.exports = {
   postPremiere: async (req, res) => {
     try {
       console.log(req.body)
-      const {
-        movieId,
-        locationId,
-        showTimeDate,
-        premiereName,
-        premierePrice
-      } = req.body
+      const { movieId, locationId, showTimeDate, premiereName, premierePrice } =
+        req.body
       const setData = {
         movie_id: movieId,
         location_id: locationId,

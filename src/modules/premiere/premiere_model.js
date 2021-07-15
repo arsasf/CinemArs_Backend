@@ -34,17 +34,12 @@ module.exports = {
       )
     })
   },
-  getDataCountByMovieId: (
-    id,
-    { sort },
-    searchByLocation,
-    searchByReleaseDate
-  ) => {
+  getDataCountByMovieId: (id, searchByLocation, searchByReleaseDate) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT COUNT(*) as total FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ? AND location.location_city = ? AND premiere.show_time_date= ? ORDER BY ${sort}`,
-        [id, searchByLocation, searchByReleaseDate],
+        `SELECT COUNT(*) as total FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ${id} AND location.location_city LIKE "%${searchByLocation}%" AND premiere.show_time_date = ${searchByReleaseDate}`,
         (error, result) => {
+          console.log(result)
           !error ? resolve(result[0].total) : reject(new Error(error))
         }
       )
@@ -60,9 +55,10 @@ module.exports = {
   ) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ? AND location.location_city = ? AND premiere.show_time_date= ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
-        [id, searchByLocation, searchByReleaseDate, limit, offset],
+        `SELECT * FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ${id} AND location.location_city LIKE "%${searchByLocation}%" AND premiere.show_time_date = ${searchByReleaseDate} ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
+        // [id, searchByLocation, searchByReleaseDate, limit, offset],
         (error, result) => {
+          console.log('ini res', result, error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
@@ -73,6 +69,17 @@ module.exports = {
       connection.query(
         'SELECT show_time.show_time_id, show_time.show_time_clock FROM(show_time JOIN premiere ON premiere.premiere_id = show_time.premiere_id) WHERE premiere.premiere_id = ? and premiere.show_time_date = ?',
         [id, date],
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+
+  getShowTime: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM show_time WHERE premiere_id = ${id}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }

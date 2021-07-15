@@ -6,9 +6,17 @@ const premiereModel = require('../premiere/premiere_model')
 module.exports = {
   getAllBooking: async (req, res) => {
     try {
-      const result = await bookingModel.getDataAll()
+      console.log(req.params, req.query, req.body)
+      const { movieId, premiereId, showTimeId } = req.query
+      console.log(movieId, premiereId, showTimeId)
+      const result = await bookingModel.getDataBooking(
+        movieId,
+        premiereId,
+        showTimeId
+      )
       return helper.response(res, 200, 'Success Get Data', result)
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
@@ -70,7 +78,14 @@ module.exports = {
             }
             bookingSeatModel.createDataBookingSeat(setDataSeat)
           })
-          return helper.response(res, 200, 'Success Create Booking!', result2)
+          const dataPayment = {
+            orderId: result2.id,
+            orderAmount: result2.booking_total_price
+          }
+          const result = await bookingModel.postOrderMidtrans(dataPayment)
+          return helper.response(res, 200, 'Success Booking Ticket', {
+            redirectUrl: result
+          })
         } catch (error) {
           return helper.response(res, 400, 'Bad Request', error)
         }

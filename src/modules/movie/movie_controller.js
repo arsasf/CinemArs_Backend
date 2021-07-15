@@ -11,57 +11,11 @@ module.exports = {
   getAllMovies: async (req, res) => {
     try {
       let { page, limit, searchByName, sort, month } = req.query
-
-      switch (page) {
-        case undefined:
-          page = 1
-          break
-        case '':
-          page = 1
-          break
-        default:
-          break
-      }
-      switch (limit) {
-        case undefined:
-          limit = 10
-          break
-        case '':
-          limit = 10
-          break
-        default:
-          break
-      }
-      switch (sort) {
-        case undefined:
-          sort = 'movie_id ASC'
-          break
-        case '':
-          sort = 'movie_id ASC'
-          break
-        default:
-          break
-      }
-      switch (searchByName) {
-        case undefined:
-          searchByName = ''
-          break
-        case '':
-          searchByName = ''
-          break
-        default:
-          break
-      }
-      switch (month) {
-        case undefined:
-          month = 'MONTH(now())'
-          break
-        case '':
-          month = 'MONTH(now())'
-          break
-        default:
-          break
-      }
+      page = page ? parseInt(page) : 1
+      limit = limit ? parseInt(limit) : 5
+      sort = sort || 'movie_id ASC'
+      searchByName = searchByName || ''
+      month = month || 'MONTH(movie_release_date)'
       page = parseInt(page)
       limit = parseInt(limit)
       const totalData = await movieModel.getDataCount({ month }, searchByName, {
