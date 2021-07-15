@@ -113,7 +113,6 @@ module.exports = {
       searchByLocation = searchByLocation || ''
       searchByDate =
         searchByDate !== '' ? `${searchByDate}` : 'premiere.show_time_date'
-      console.log(page, limit, sort, searchByLocation, searchByDate)
       const totalData = await premiereModel.getDataCountByMovieId(
         id,
         searchByLocation,
