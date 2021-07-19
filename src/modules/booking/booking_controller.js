@@ -46,6 +46,20 @@ module.exports = {
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
+  getHistoryOrderByUserId: async (req, res) => {
+    try {
+      const id = req.decodeToken.user_id
+      const result = await bookingModel.getDataOrderHistoryByUserId(id)
+      if (result.length > 0) {
+        return helper.response(res, 200, 'Success Get Data', result)
+      } else {
+        return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
+      }
+    } catch (error) {
+      console.log(error)
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
   postBooking: async (req, res) => {
     try {
       const {
@@ -96,51 +110,24 @@ module.exports = {
   },
   getBookingDashboard: async (req, res) => {
     try {
-      let { movieName, premiereName, locationCity } = req.query
-      console.log(req.query)
-      switch (movieName) {
-        case undefined:
-          movieName = ''
-          break
-        case '':
-          movieName = ''
-          break
-        default:
-          break
+      const { movieName, premiereName, locationCity } = req.query
+      console.log(req.body, req.query)
+      const movie = movieName || ''
+      const premiere = premiereName || ''
+      const location = locationCity || ''
+      const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      const totalAMonth = []
+      for (const month of months) {
+        console.log(month)
+        const resultMonth = await bookingModel.getDataDashboard(
+          movie,
+          premiere,
+          location,
+          month
+        )
+        totalAMonth.push(resultMonth[0])
       }
-      switch (premiereName) {
-        case undefined:
-          premiereName = ''
-          break
-        case '':
-          premiereName = ''
-          break
-        default:
-          break
-      }
-      switch (locationCity) {
-        case undefined:
-          locationCity = ''
-          break
-        case '':
-          locationCity = ''
-          break
-        default:
-          break
-      }
-      const movie = movieName
-      const premiere = premiereName
-      const location = locationCity
-      const result = await bookingModel.getDataDashboard(
-        movie,
-        premiere,
-        location
-      )
-      if (result.length > 0) {
-        return helper.response(res, 200, 'Success Get Data', result)
-      } else {
-        return helper.response(res, 404, 'Data Not Found !', null)
-      }
+      return helper.response(res, 200, 'Success Get Data', totalAMonth)
     } catch (error) {
       console.log(error)
       return helper.response(res, 400, 'Bad Request', error)

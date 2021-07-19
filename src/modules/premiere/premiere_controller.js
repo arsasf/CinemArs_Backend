@@ -111,8 +111,7 @@ module.exports = {
       limit = limit ? parseInt(limit) : 9
       sort = sort || 'premiere.premiere_id ASC'
       searchByLocation = searchByLocation || ''
-      searchByDate =
-        searchByDate !== '' ? `${searchByDate}` : 'premiere.show_time_date'
+      searchByDate = searchByDate || 'premiere.show_time_date'
       const totalData = await premiereModel.getDataCountByMovieId(
         id,
         searchByLocation,
@@ -129,6 +128,53 @@ module.exports = {
         totalData
       }
       const result = await premiereModel.getDataByMovieId(
+        id,
+        { sort },
+        searchByLocation,
+        searchByDate,
+        limit,
+        offset
+      )
+      if (result.length > 0) {
+        for (const value of result) {
+          value.show_time_clock = await premiereModel.getShowTime(
+            value.premiere_id
+          )
+        }
+        return helper.response(res, 200, 'Success Get Data', result, pageInfo)
+      } else {
+        return helper.response(res, 404, `Data ${id} Not Found !`, null)
+      }
+    } catch (error) {
+      console.log(error)
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  getPremiereSearch: async (req, res) => {
+    try {
+      const { id } = req.params
+      let { page, limit, sort, searchByLocation, searchByDate } = req.query
+      page = page ? parseInt(page) : 1
+      limit = limit ? parseInt(limit) : 9
+      sort = sort || 'premiere.premiere_id ASC'
+      searchByLocation = searchByLocation || ''
+      searchByDate = searchByDate || 'premiere.show_time_date'
+      const totalData = await premiereModel.getDataCountSearch(
+        id,
+        searchByLocation,
+        searchByDate
+      )
+      page = parseInt(page)
+      limit = parseInt(limit)
+      const totalpage = Math.ceil(totalData / limit)
+      const offset = page * limit - limit
+      const pageInfo = {
+        page,
+        totalpage,
+        limit,
+        totalData
+      }
+      const result = await premiereModel.getDataSearch(
         id,
         { sort },
         searchByLocation,

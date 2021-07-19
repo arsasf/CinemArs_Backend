@@ -6,6 +6,11 @@ const { isAdmin } = require('../../middleware/auth')
 
 Route.get('/', bookingController.getAllBooking)
 Route.get('/:id', bookingController.getBookingById)
+Route.get(
+  '/user/order-history',
+  authMiddleware.authentication,
+  bookingController.getHistoryOrderByUserId
+)
 Route.get('/user/:id', bookingController.getBookingByUserId)
 Route.get(
   '/admin/dashboard',

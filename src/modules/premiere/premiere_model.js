@@ -56,7 +56,35 @@ module.exports = {
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT * FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ${id} AND location.location_city LIKE "%${searchByLocation}%" AND premiere.show_time_date = ${searchByReleaseDate} ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
-        // [id, searchByLocation, searchByReleaseDate, limit, offset],
+        (error, result) => {
+          console.log('ini res', result, error)
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getDataCountSearch: (id, searchByLocation, searchByReleaseDate) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT(*) as total FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ${id} AND location.location_city LIKE "%${searchByLocation}%" AND premiere.show_time_date = '${searchByReleaseDate}'`,
+        (error, result) => {
+          console.log(result)
+          !error ? resolve(result[0].total) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getDataSearch: (
+    id,
+    { sort },
+    searchByLocation,
+    searchByReleaseDate,
+    limit,
+    offset
+  ) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM premiere JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE movie.movie_id = ${id} AND location.location_city LIKE "%${searchByLocation}%" AND premiere.show_time_date = '${searchByReleaseDate}' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
         (error, result) => {
           console.log('ini res', result, error)
           !error ? resolve(result) : reject(new Error(error))

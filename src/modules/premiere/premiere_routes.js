@@ -17,6 +17,11 @@ Route.get(
   authMiddleware.authentication,
   premiereController.getPremiereByMovieId
 )
+Route.get(
+  '/movie-search/:id',
+  authMiddleware.authentication,
+  premiereController.getPremiereSearch
+)
 Route.post(
   '/:id',
   authMiddleware.authentication,

@@ -44,13 +44,25 @@ module.exports = {
       )
     })
   },
-  getDataDashboard: (movie, premiere, location) => {
-    console.log(movie, premiere, location)
+  getDataOrderHistoryByUserId: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT MONTH(booking_created_at) AS month, SUM(booking_total_price) AS total from booking JOIN premiere ON premiere.premiere_id = booking.premiere_id JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON location.location_id = premiere.location_id WHERE movie.movie_name LIKE "%"?"%" AND premiere.premiere_name LIKE "%"?"%" AND location.location_city LIKE "%"?"%" GROUP BY MONTH(booking_created_at)',
+        `SELECT *FROM booking JOIN show_time ON show_time.show_time_id = booking.show_time_id JOIN premiere ON show_time.premiere_id = premiere.premiere_id JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON premiere.location_id = location.location_id WHERE booking.user_id = ${id} ORDER BY booking.booking_id DESC`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getDataDashboard: (movie, premiere, location, month) => {
+    console.log(movie, premiere, location, month)
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT MONTH(booking_created_at) AS month, SUM(booking_total_price) AS total from booking JOIN premiere ON premiere.premiere_id = booking.premiere_id JOIN movie ON premiere.movie_id = movie.movie_id JOIN location ON location.location_id = premiere.location_id WHERE month(booking.booking_created_at) = ${month} AND year(booking.booking_created_at) = 2021 AND movie.movie_name LIKE "%"?"%" AND premiere.premiere_name LIKE "%"?"%" AND location.location_city LIKE "%"?"%"`,
         [movie, premiere, location],
         (error, result) => {
+          console.log(result)
+          console.log(error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
