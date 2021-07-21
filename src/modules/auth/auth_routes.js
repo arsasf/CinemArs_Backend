@@ -16,13 +16,13 @@ Route.post('/register', register)
 Route.get('/verify/:hash', verify)
 Route.get('/:id', authMiddleware.authentication, getDataUserById)
 Route.patch(
-  '/update-profile/:id',
+  '/update-profile',
   authMiddleware.authentication,
   uploadFile,
   updateProfile
 )
 Route.patch(
-  '/update-password/:id',
+  '/update-password',
   authMiddleware.authentication,
   updatePasswordUser
 )

@@ -73,105 +73,18 @@ module.exports = {
         movieCasts,
         movieSynopsis
       } = req.body
-      switch (movieName) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Movie Name')
-        case '':
-          return helper.response(res, 404, 'Please Input Movie Name')
-        default:
-          break
-      }
-      switch (movieCategory) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Category')
-        case '':
-          return helper.response(res, 404, 'Please Input Category')
-        default:
-          break
-      }
-      switch (movieReleaseDate) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Release Date')
-        case '':
-          return helper.response(res, 404, 'Please Input Release Date')
-        default:
-          break
-      }
-      switch (movieDurationHours) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Duration Hours')
-        case '':
-          return helper.response(res, 404, 'Please Input Duration Hours')
-        case movieDurationHours.length > 1:
-          return helper.response(
-            res,
-            404,
-            'Duration Hours Wrong, Please Check Again'
-          )
-
-        default:
-          break
-      }
-      switch (movieDurationMinutes) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Duration Minutes')
-        case '':
-          return helper.response(res, 404, 'Please Input Duration Minutes')
-        case movieDurationMinutes.length > 1:
-          return helper.response(
-            res,
-            404,
-            'Duration Minutes Wrong, Please Check Again'
-          )
-        default:
-          break
-      }
-      switch (movieDirectedBy) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Director')
-        case '':
-          return helper.response(res, 404, 'Please Input Director')
-        default:
-          break
-      }
-      switch (movieCasts) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Casts')
-        case '':
-          return helper.response(res, 404, 'Please Input Casts')
-        default:
-          break
-      }
-      switch (movieSynopsis) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input Synopsis')
-        case '':
-          return helper.response(res, 404, 'Please Input Synopsis')
-        default:
-          break
-      }
-      switch (req.file) {
-        case undefined:
-          return helper.response(res, 404, 'Please Input File Image')
-        case '':
-          return helper.response(res, 404, 'Please Input File Image')
-        default:
-          break
-      }
       const setData = {
         movie_name: movieName,
         movie_category: movieCategory,
         movie_release_date: movieReleaseDate,
-        movie_duration: `${movieDurationHours} hours ${movieDurationMinutes} minutes`,
+        movie_duration_hours: movieDurationHours,
+        movie_duration_minutes: movieDurationMinutes,
         movie_directed_by: movieDirectedBy,
         movie_casts: movieCasts,
         movie_synopsis: movieSynopsis,
         movie_image: req.file ? req.file.filename : ''
       }
       const result = await movieModel.createData(setData)
-      console.log(
-        `Success create movie Id : ${result.id}  and add file : ${result.movie_image}\n`
-      )
       return helper.response(res, 200, 'Success Create Movie', result)
     } catch (error) {
       console.log(error)
@@ -182,8 +95,8 @@ module.exports = {
   updateMovie: async (req, res) => {
     try {
       const { id } = req.params
-      const resultId = await movieModel.getDataById(id)
-      if (resultId.length > 0) {
+      const dataToUpdate = await movieModel.getDataById(id)
+      if (dataToUpdate.length > 0) {
         const {
           movieName,
           movieCategory,
@@ -194,186 +107,36 @@ module.exports = {
           movieCasts,
           movieSynopsis
         } = req.body
-        console.log(movieDurationHours.length)
-        switch (movieName) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Movie Name'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Movie Name'
-            )
-          default:
-            break
-        }
-        switch (movieCategory) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Category'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Category'
-            )
-          default:
-            break
-        }
-        switch (movieReleaseDate) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Release Date'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Release Date'
-            )
-          default:
-            break
-        }
-        switch (movieDurationHours) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Duration Hours'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Duration Hours'
-            )
-          case movieDurationHours.length > 1:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Input Duration Hours Wrong. Please Check Again'
-            )
-          default:
-            break
-        }
-        switch (movieDurationMinutes) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Duration Minutes'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Duration Minutes'
-            )
-          case movieDurationMinutes.length > 1:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Input Duration Minutes Wrong. Please Check Again'
-            )
-          default:
-            break
-        }
-        switch (movieDirectedBy) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Director'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Director'
-            )
-          default:
-            break
-        }
-        switch (movieCasts) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Casts'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Casts'
-            )
-          default:
-            break
-        }
-        switch (movieSynopsis) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Synopsis'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Synopsis'
-            )
-          default:
-            break
-        }
-        switch (req.file) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Image'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Image'
-            )
-          default:
-            break
-        }
         const setData = {
-          movie_name: movieName,
-          movie_image: req.file ? req.file.filename : '',
-          movie_category: movieCategory,
-          movie_release_date: movieReleaseDate,
-          movie_duration: `${movieDurationHours} hours ${movieDurationMinutes} minutes`,
-          movie_directed_by: movieDirectedBy,
-          movie_casts: movieCasts,
-          movie_synopsis: movieSynopsis,
-          movie_updated_at: new Date(Date.now())
+          movie_name: movieName || dataToUpdate[0].movie_name,
+          movie_category: movieCategory || dataToUpdate[0].movie_category,
+          movie_release_date:
+            movieReleaseDate || dataToUpdate[0].movie_release_date,
+          movie_duration_hours:
+            movieDurationHours || dataToUpdate[0].movie_duration_hours,
+          movie_duration_minutes:
+            movieDurationMinutes || dataToUpdate[0].movie_duration_minutes,
+          movie_directed_by:
+            movieDirectedBy || dataToUpdate[0].movie_directed_by,
+          movie_casts: movieCasts || dataToUpdate[0].movie_casts,
+          movie_synopsis: movieSynopsis || dataToUpdate[0].movie_synopsis,
+          movie_updated_at: new Date(Date.now()),
+          movie_image: req.file
+            ? req.file.filename
+            : dataToUpdate[0].movie_image
         }
-        const result = await movieModel.updateData(setData, id)
-        console.log(`Success update movie Id : ${id} \n`)
-        const pathFile = 'src/uploads/' + resultId[0].movie_image
-        if (fs.existsSync(pathFile)) {
-          fs.unlink(pathFile, function (err) {
+        const imageToDelete = dataToUpdate[0].movie_image
+        console.log(imageToDelete)
+        const isImageExist = fs.existsSync(`src/uploads/${imageToDelete}`)
+        if (isImageExist && imageToDelete) {
+          fs.unlink(`src/uploads/${imageToDelete}`, (err) => {
             if (err) throw err
-            console.log('Oldest Image Success Deleted')
+            console.log(err)
           })
         }
+        const result = await movieModel.updateData(setData, id)
         return helper.response(res, 200, 'Success update Movie', result)
       } else {
-        console.log(res)
         return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
       }
     } catch (error) {
@@ -381,27 +144,67 @@ module.exports = {
     }
   },
 
-  deleteMovie: async (req, res) => {
+  updateImage: async (req, res) => {
     try {
       const { id } = req.params
-      const resultId = await movieModel.getDataById(id)
-      if (resultId.length > 0) {
-        const pathFile = 'src/uploads/' + resultId[0].movie_image
-        console.log(pathFile)
-        if (fs.existsSync(pathFile)) {
-          fs.unlink(pathFile, function (err) {
-            if (err) throw err
-            console.log('Image was Deleted')
-          })
+      const setData = {
+        movie_image: req.file ? req.file.filename : '',
+        movie_updated_at: new Date(Date.now())
+      }
+      const dataToUpdate = await movieModel.getDataById(id)
+      console.log(dataToUpdate)
+      if (dataToUpdate.length > 0) {
+        if (dataToUpdate.length > 0) {
+          console.log(true)
+          const imageToDelete = dataToUpdate[0].movie_image
+          console.log(imageToDelete)
+          const isImageExist = fs.existsSync(`src/uploads/${imageToDelete}`)
+          if (isImageExist && imageToDelete) {
+            console.log(true)
+            fs.unlink(`src/uploads/${imageToDelete}`, (err) => {
+              if (err) throw err
+              console.log(err)
+            })
+          }
         }
-        const result = await movieModel.deleteData(id)
-        console.log(`Success Delete movie Id : ${id} \n`)
-        return helper.response(res, 200, 'Success Delete Movie', result)
+        const result = await movieModel.updateData(setData, id)
+        return helper.response(res, 200, 'Success Update Image', result)
       } else {
-        return helper.response(res, 404, `Data By Id ${id} Not Found !`, null)
+        return helper.response(res, 404, `Failed! Id ${id}  Not Found`)
       }
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  deleteMovie: async (req, res) => {
+    try {
+      const { id } = req.params
+      const isExist = await movieModel.getDataById(id)
+      if (isExist.length === 0) {
+        return helper.response(res, 404, 'Cannot delete empty data')
+      } else {
+        if (isExist.length > 0) {
+          const imageToDelete = isExist[0].movie_image
+          const isImageExist = fs.existsSync(`src/uploads/${imageToDelete}`)
+
+          if (isImageExist && imageToDelete) {
+            fs.unlink(`src/uploads/${imageToDelete}`, (err) => {
+              if (err) throw err
+            })
+          }
+        }
+        const result = await movieModel.deleteData(id)
+
+        return helper.response(
+          res,
+          200,
+          `Success delete movie id ${id}`,
+          result
+        )
+      }
+    } catch (error) {
+      console.log(error)
+      return helper.response(res, 400, 'Bad request', error)
     }
   }
 }

@@ -84,6 +84,22 @@ module.exports = {
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
+  getDataSearch: async (req, res) => {
+    try {
+      let { location, movie } = req.query
+      location = location || ''
+      movie = movie || ''
+      const result = await locationModel.getDataSearch(location, movie)
+      console.log(result)
+      if (result.length > 0) {
+        return helper.response(res, 200, 'Success Get Data', result)
+      } else {
+        return helper.response(res, 404, 'Data Not Found !', [])
+      }
+    } catch (error) {
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
   postLocation: async (req, res) => {
     try {
       console.log(req.body)

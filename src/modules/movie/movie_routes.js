@@ -35,6 +35,14 @@ Route.patch(
   redisMiddleware.cleardataMovieRedis,
   movieController.updateMovie
 )
+Route.patch(
+  '/image/:id',
+  authMiddleware.authentication,
+  authMiddleware.isAdmin,
+  uploadFile,
+  redisMiddleware.cleardataMovieRedis,
+  movieController.updateImage
+)
 Route.delete(
   '/:id',
   authMiddleware.authentication,

@@ -138,88 +138,26 @@ module.exports = {
   },
   updateProfile: async (req, res) => {
     try {
-      const { id } = req.params
+      const id = req.decodeToken.user_id
       const resultId = await authModel.getDataUserById(id)
       if (resultId.length > 0) {
         const { userFirstName, userLastName, userEmail, userPhoneNumber } =
           req.body
-        switch (userFirstName) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Please click update profile near info, before update changes'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Please click update profile  near info, before update changes'
-            )
-          default:
-            break
-        }
-        switch (userLastName) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Please click update profile near info, before update changes'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Please click update profile  near info, before update changes'
-            )
-          default:
-            break
-        }
-        switch (userPhoneNumber) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Please click update profile near info, before update changes'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Please click update profile  near info, before update changes'
-            )
-          default:
-            break
-        }
-        switch (req.file) {
-          case undefined:
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Image'
-            )
-          case '':
-            return helper.response(
-              res,
-              404,
-              'Update Failed, Please Input Image'
-            )
-          default:
-            break
-        }
         const setData = {
-          user_image: req.file ? req.file.filename : '',
-          user_first_name: userFirstName,
-          user_last_name: userLastName,
-          user_email: userEmail,
-          user_phone_number: userPhoneNumber,
+          user_image: req.file ? req.file.filename : resultId[0].user_image,
+          user_first_name: userFirstName || resultId[0].user_first_name,
+          user_last_name: userLastName || resultId[0].user_last_name,
+          user_email: userEmail || resultId[0].user_email,
+          user_phone_number: userPhoneNumber || resultId[0].user_phone_number,
           user_updated_at: new Date(Date.now())
         }
-        const pathFile = 'src/uploads/' + resultId[0].user_image
-        if (fs.existsSync(pathFile)) {
-          fs.unlink(pathFile, function (err) {
+        const imageToDelete = resultId[0].user_image
+        console.log(imageToDelete)
+        const isImageExist = fs.existsSync(`src/uploads/${imageToDelete}`)
+        if (isImageExist && imageToDelete) {
+          fs.unlink(`src/uploads/${imageToDelete}`, (err) => {
             if (err) throw err
-            console.log('Oldest Image Success Deleted')
+            console.log(err)
           })
         }
         const result = await authModel.updateData(setData, id)
@@ -234,40 +172,8 @@ module.exports = {
   },
   updatePasswordUser: async (req, res) => {
     try {
-      const { id } = req.params
+      const id = req.decodeToken.user_id
       const { userNewPassword, userConfirmPassword } = req.body
-      switch (userNewPassword) {
-        case undefined:
-          return helper.response(
-            res,
-            404,
-            'Update Failed, Please Input New Password'
-          )
-        case '':
-          return helper.response(
-            res,
-            404,
-            'Update Failed, Please Input New Password'
-          )
-        default:
-          break
-      }
-      switch (userConfirmPassword) {
-        case undefined:
-          return helper.response(
-            res,
-            404,
-            'Update Failed, Please Input Confirm Password'
-          )
-        case '':
-          return helper.response(
-            res,
-            404,
-            'Update Failed, Please Input Confirm Password'
-          )
-        default:
-          break
-      }
       const salt = bcrypt.genSaltSync(10)
       const encryptPassword = bcrypt.hashSync(userNewPassword, salt)
       console.log(`Before encrypt = ${userNewPassword}`)

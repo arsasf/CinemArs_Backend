@@ -34,6 +34,16 @@ module.exports = {
       )
     })
   },
+  getDataSearch: (location, movie) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM movie JOIN premiere ON premiere.movie_id = movie.movie_id JOIN location ON location.location_id = premiere.location_id WHERE location.location_city LIKE '%${location}%' AND movie.movie_name LIKE '%${movie}%'`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   createData: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query(
