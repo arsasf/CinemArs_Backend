@@ -116,18 +116,8 @@ module.exports = {
     try {
       const { id } = req.params
       const result1 = await authModel.getDataUserById(id)
-      if (result1[0].user_image === '') {
-        const setData = {
-          user_image: 'Image.not.availabe.png'
-        }
-        let resultImage = await authModel.updateData(setData, id)
-        resultImage = await authModel.getDataUserById(resultImage.id)
-        return helper.response(
-          res,
-          200,
-          'set Image default success',
-          resultImage
-        )
+      if (result1.length <= 0) {
+        return helper.response(res, 400, 'Data not found !')
       }
       const result = await authModel.getDataUserById(id)
       return helper.response(res, 200, 'Success get data', result)
@@ -143,12 +133,56 @@ module.exports = {
       if (resultId.length > 0) {
         const { userFirstName, userLastName, userEmail, userPhoneNumber } =
           req.body
+
+        console.log()
+        if (req.file !== undefined) {
+          const setData = {
+            user_image: req.file ? req.file.filename : resultId[0].user_image,
+            user_first_name: userFirstName || resultId[0].user_first_name,
+            user_last_name: userLastName || resultId[0].user_last_name,
+            user_email: userEmail || resultId[0].user_email,
+            user_phone_number: userPhoneNumber || resultId[0].user_phone_number,
+            user_updated_at: new Date(Date.now())
+          }
+          const imageToDelete = resultId[0].user_image
+
+          const isImageExist = fs.existsSync(`src/uploads/${imageToDelete}`)
+          if (isImageExist && imageToDelete) {
+            fs.unlink(`src/uploads/${imageToDelete}`, (err) => {
+              if (err) throw err
+              console.log(err)
+            })
+          }
+          const result = await authModel.updateData(setData, id)
+          return helper.response(res, 200, 'Success update Profile', result)
+        } else {
+          const setData = {
+            user_image: resultId[0].user_image,
+            user_first_name: userFirstName || resultId[0].user_first_name,
+            user_last_name: userLastName || resultId[0].user_last_name,
+            user_email: userEmail || resultId[0].user_email,
+            user_phone_number: userPhoneNumber || resultId[0].user_phone_number,
+            user_updated_at: new Date(Date.now())
+          }
+          const result = await authModel.updateData(setData, id)
+          return helper.response(res, 200, 'Success update Profile', result)
+        }
+      }
+    } catch (error) {
+      return helper.response(res, 408, 'Bad Request', error)
+    }
+  },
+  deleteImage: async (req, res) => {
+    try {
+      const id = req.decodeToken.user_id
+      const resultId = await authModel.getDataUserById(id)
+      if (resultId.length > 0) {
         const setData = {
-          user_image: req.file ? req.file.filename : resultId[0].user_image,
-          user_first_name: userFirstName || resultId[0].user_first_name,
-          user_last_name: userLastName || resultId[0].user_last_name,
-          user_email: userEmail || resultId[0].user_email,
-          user_phone_number: userPhoneNumber || resultId[0].user_phone_number,
+          user_image: '',
+          user_first_name: resultId[0].user_first_name,
+          user_last_name: resultId[0].user_last_name,
+          user_email: resultId[0].user_email,
+          user_phone_number: resultId[0].user_phone_number,
           user_updated_at: new Date(Date.now())
         }
         const imageToDelete = resultId[0].user_image
@@ -161,10 +195,7 @@ module.exports = {
           })
         }
         const result = await authModel.updateData(setData, id)
-        console.log(
-          `Success update movie Id : ${id} and update image : ${result.user_image}\n`
-        )
-        return helper.response(res, 200, 'Success update Movie', result)
+        return helper.response(res, 200, 'Success Delete Image', result)
       }
     } catch (error) {
       return helper.response(res, 408, 'Bad Request', error)

@@ -8,7 +8,8 @@ const {
   verify,
   updateProfile,
   updatePasswordUser,
-  getDataUserById
+  getDataUserById,
+  deleteImage
 } = require('./auth_controller')
 
 Route.post('/login', login)
@@ -20,6 +21,12 @@ Route.patch(
   authMiddleware.authentication,
   uploadFile,
   updateProfile
+)
+Route.patch(
+  '/delete-image',
+  authMiddleware.authentication,
+  uploadFile,
+  deleteImage
 )
 Route.patch(
   '/update-password',
